@@ -32,7 +32,7 @@ final readonly class Voice
         // start every request before reading any: the HTTP client runs them concurrently
         $results = [];
         foreach ($script->lines as $line) {
-            $results[] = $this->platform->invoke($this->model, new Text($line->text), [
+            $results[] = $this->platform->invoke($this->model, new Text($this->show->pronounce($line->text)), [
                 'voice' => $this->show->hosts[$line->host]->voiceFor($line->emotion),
             ]);
         }

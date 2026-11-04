@@ -12,6 +12,7 @@
         "doctrine/orm": "^3.7",
         "mcp/sdk": "*@beta",
         "nyholm/psr7": "^1.8",
+        "symfony/ai-agent": "dev-main as 1.0.0-BETA2",
         "symfony/ai-bundle": "dev-main as 1.0.0-BETA2",
         "symfony/ai-generic-platform": "dev-main as 1.0.0-BETA2",
         "symfony/ai-mistral-platform": "dev-main as 1.0.0-BETA2",
