@@ -55,6 +55,14 @@ final class ScriptCheckerTest extends TestCase
         self::assertSame(['The script has 500 words, aim for about 300.'], $this->checker->check(Fixtures::script(500), Fixtures::brief(2)));
     }
 
+    public function testRejectsRelativeDays(): void
+    {
+        $script = Fixtures::script();
+        $script = new Script($script->title, [new Line('paul', 'neutral', 'Gen.G play Tomorrow, then Karmine on the sixth.', []), ...$script->lines]);
+
+        self::assertSame(['Line 1 says "Tomorrow": give the date itself, people listen later.'], $this->checker->check($script, Fixtures::brief()));
+    }
+
     public function testRejectsEmptyAndOverlongLines(): void
     {
         $script = Fixtures::script();

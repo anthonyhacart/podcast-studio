@@ -15,6 +15,8 @@ final readonly class ScriptChecker
     private const MIN_LENGTH_RATIO = 0.6;
     private const MAX_LENGTH_RATIO = 1.5;
     private const MAX_LINE_CHARACTERS = 400;
+    // episodes are heard later: relative days would be wrong by then
+    private const RELATIVE_DAYS = '/\b(today|tonight|tomorrow|yesterday|this (?:week|weekend|morning|evening)|last (?:night|week)|next week)\b/i';
 
     public function __construct(
         private Show $show,
@@ -44,6 +46,9 @@ final readonly class ScriptChecker
             }
             if ('' === trim($line->text)) {
                 $problems[] = \sprintf('Line %d is empty.', $n);
+            }
+            if (preg_match(self::RELATIVE_DAYS, $line->text, $match)) {
+                $problems[] = \sprintf('Line %d says "%s": give the date itself, people listen later.', $n, $match[1]);
             }
             if (mb_strlen($line->text) > self::MAX_LINE_CHARACTERS) {
                 $problems[] = \sprintf('Line %d is too long for a spoken line (%d characters, max %d).', $n, mb_strlen($line->text), self::MAX_LINE_CHARACTERS);

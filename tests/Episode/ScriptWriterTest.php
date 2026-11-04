@@ -13,6 +13,7 @@ use Symfony\AI\Agent\AgentInterface;
 use Symfony\AI\Agent\Execution\ExecutionInterface;
 use Symfony\AI\Platform\Message\MessageBag;
 use Symfony\AI\Platform\Message\Role;
+use Symfony\Component\Clock\MockClock;
 
 final class ScriptWriterTest extends TestCase
 {
@@ -25,6 +26,7 @@ final class ScriptWriterTest extends TestCase
 
         self::assertCount(1, $this->calls);
         self::assertSame('Episode', $script->title);
+        self::assertStringContainsString('Today: Wednesday 4 November 2026.', $this->lastUserText());
         self::assertStringContainsString('[2] Teams', $this->lastUserText());
     }
 
@@ -45,26 +47,33 @@ final class ScriptWriterTest extends TestCase
         $this->writer(Fixtures::script(20), Fixtures::script(20))->write(Fixtures::brief());
     }
 
+    public function testRevisesWithTheEditorsInstructions(): void
+    {
+        $this->writer(Fixtures::script())->revise(Fixtures::brief(), Fixtures::script(), 'Shorter, please.');
+
+        self::assertStringContainsString("The editor asks for these changes, apply them and return the whole script:\nShorter, please.", $this->lastUserText());
+        self::assertCount(3, $this->calls[0], 'brief, previous script, instructions');
+    }
+
     private function writer(Script ...$scripts): ScriptWriter
     {
         $agent = self::createStub(AgentInterface::class);
         $agent->method('call')->willReturnCallback(function (MessageBag $messages) use (&$scripts): ExecutionInterface {
             $this->calls[] = clone $messages;
-            $execution = $this->createStub(ExecutionInterface::class);
+            $execution = self::createStub(ExecutionInterface::class);
             $execution->method('asObject')->willReturn(array_shift($scripts));
 
             return $execution;
         });
 
-        return new ScriptWriter($agent, new ScriptChecker(Fixtures::show()), Fixtures::show());
+        return new ScriptWriter($agent, new ScriptChecker(Fixtures::show()), Fixtures::show(), new MockClock('2026-11-04 10:00'));
     }
 
     private function lastUserText(): string
     {
         $bag = end($this->calls);
         self::assertInstanceOf(MessageBag::class, $bag);
-        $last = $bag->latestAs(Role::User);
 
-        return $last->asText() ?? '';
+        return $bag->latestAs(Role::User)->asText() ?? '';
     }
 }

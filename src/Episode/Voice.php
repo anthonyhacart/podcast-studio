@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Episode;
 
 use App\Show\Show;
-use RuntimeException;
 use Symfony\AI\Platform\Exception\ExceptionInterface;
 use Symfony\AI\Platform\Message\Content\Text;
 use Symfony\AI\Platform\PlatformInterface;
@@ -42,7 +41,7 @@ final readonly class Voice
             try {
                 $clips[] = $result->asBinary();
             } catch (ExceptionInterface $e) {
-                throw new RuntimeException(\sprintf('Line %d could not be voiced ("%s"): %s', $i + 1, $script->lines[$i]->text, $e->getMessage()), previous: $e);
+                throw new UnspeakableLineException($i + 1, $script->lines[$i]->text, $e);
             }
         }
 
