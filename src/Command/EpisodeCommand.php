@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Episode\Brief;
-use App\Episode\Mixer;
+use App\Episode\Mp3Joiner;
 use App\Episode\ScriptWriter;
 use App\Episode\Voice;
 use Symfony\Component\Console\Attribute\Argument;
@@ -23,7 +23,7 @@ final readonly class EpisodeCommand
         private SerializerInterface $serializer,
         private ScriptWriter $writer,
         private Voice $voice,
-        private Mixer $mixer,
+        private Mp3Joiner $joiner,
         private Filesystem $filesystem,
         #[Autowire('%kernel.project_dir%/var/episodes')] private string $episodesDir,
     ) {
@@ -48,8 +48,9 @@ final readonly class EpisodeCommand
         $clips = $this->voice->speak($script);
         $io->writeln(\sprintf('Voice: %d clips (%.1fs)', \count($clips), (hrtime(true) - $start) / 1e9));
 
-        $this->mixer->mix($clips, "{$dir}/episode.mp3");
-        $io->success("{$dir}/episode.mp3");
+        [$mp3, $seconds] = $this->joiner->join($clips);
+        $this->filesystem->dumpFile("{$dir}/episode.mp3", $mp3);
+        $io->success(\sprintf('%s/episode.mp3 (%d:%02d)', $dir, intdiv((int) $seconds, 60), (int) $seconds % 60));
 
         return 0;
     }

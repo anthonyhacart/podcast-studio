@@ -25,7 +25,7 @@ final readonly class Voice
     }
 
     /**
-     * @return list<string> one WAV file content per line
+     * @return list<string> one MP3 file content per line
      */
     public function speak(Script $script): array
     {
@@ -34,7 +34,6 @@ final readonly class Voice
         foreach ($script->lines as $line) {
             $results[] = $this->platform->invoke($this->model, new Text($line->text), [
                 'voice' => $this->show->hosts[$line->host]->voiceFor($line->emotion),
-                'response_format' => 'wav',
             ]);
         }
 
