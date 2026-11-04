@@ -1476,7 +1476,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             http_client?: string|Param,
  *         }>,
  *         pinecone?: array<string, array{ // Default: []
- *             client?: string|Param, // Default: "Probots\\Pinecone\\Client"
+ *             api_key?: string|Param,
+ *             http_client?: string|Param, // Default: "http_client"
  *             index_name?: string|Param,
  *             namespace?: string|Param,
  *             filter?: list<scalar|Param|null>,

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5da16c0d2bcafffe92df152a986029f4",
+    "content-hash": "65f36b37e634c401d5de107ef08548c8",
     "packages": [
         {
             "name": "composer/semver",
@@ -1473,6 +1473,84 @@
             "time": "2026-09-29T19:21:12+00:00"
         },
         {
+            "name": "nyholm/psr7",
+            "version": "1.8.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Nyholm/psr7.git",
+                "reference": "a71f2b11690f4b24d099d6b16690a90ae14fc6f3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Nyholm/psr7/zipball/a71f2b11690f4b24d099d6b16690a90ae14fc6f3",
+                "reference": "a71f2b11690f4b24d099d6b16690a90ae14fc6f3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2",
+                "psr/http-factory": "^1.0",
+                "psr/http-message": "^1.1 || ^2.0"
+            },
+            "provide": {
+                "php-http/message-factory-implementation": "1.0",
+                "psr/http-factory-implementation": "1.0",
+                "psr/http-message-implementation": "1.0"
+            },
+            "require-dev": {
+                "http-interop/http-factory-tests": "^0.9",
+                "php-http/message-factory": "^1.0",
+                "php-http/psr7-integration-tests": "^1.0",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.4",
+                "symfony/error-handler": "^4.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.8-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Nyholm\\Psr7\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tobias Nyholm",
+                    "email": "tobias.nyholm@gmail.com"
+                },
+                {
+                    "name": "Martijn van der Ven",
+                    "email": "martijn@vanderven.se"
+                }
+            ],
+            "description": "A fast PHP7 implementation of PSR-7",
+            "homepage": "https://tnyholm.se",
+            "keywords": [
+                "psr-17",
+                "psr-7"
+            ],
+            "support": {
+                "issues": "https://github.com/Nyholm/psr7/issues",
+                "source": "https://github.com/Nyholm/psr7/tree/1.8.2"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/Zegnat",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nyholm",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-09-09T07:06:30+00:00"
+        },
+        {
             "name": "opis/json-schema",
             "version": "2.6.0",
             "source": {
@@ -2601,17 +2679,68 @@
             "time": "2024-09-11T13:17:53+00:00"
         },
         {
-            "name": "symfony/ai-bundle",
-            "version": "v1.0.0-BETA1",
+            "name": "psr/simple-cache",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/ai-bundle.git",
-                "reference": "01f576b345a7d52df0752761ab806f7d96773f92"
+                "url": "https://github.com/php-fig/simple-cache.git",
+                "reference": "764e0b3939f5ca87cb904f570ef9be2d78a07865"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ai-bundle/zipball/01f576b345a7d52df0752761ab806f7d96773f92",
-                "reference": "01f576b345a7d52df0752761ab806f7d96773f92",
+                "url": "https://api.github.com/repos/php-fig/simple-cache/zipball/764e0b3939f5ca87cb904f570ef9be2d78a07865",
+                "reference": "764e0b3939f5ca87cb904f570ef9be2d78a07865",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\SimpleCache\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interfaces for simple caching",
+            "keywords": [
+                "cache",
+                "caching",
+                "psr",
+                "psr-16",
+                "simple-cache"
+            ],
+            "support": {
+                "source": "https://github.com/php-fig/simple-cache/tree/3.0.0"
+            },
+            "time": "2021-10-29T13:26:27+00:00"
+        },
+        {
+            "name": "symfony/ai-bundle",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/ai-bundle.git",
+                "reference": "9b51a15c5338799e02b7823f3a2eb2fe8a27a59f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/ai-bundle/zipball/9b51a15c5338799e02b7823f3a2eb2fe8a27a59f",
+                "reference": "9b51a15c5338799e02b7823f3a2eb2fe8a27a59f",
                 "shasum": ""
             },
             "require": {
@@ -2715,6 +2844,7 @@
                 "symfony/translation": "^7.3|^8.0",
                 "symfony/validator": "^7.3|^8.0"
             },
+            "default-branch": true,
             "type": "symfony-bundle",
             "extra": {
                 "thanks": {
@@ -2747,7 +2877,7 @@
             ],
             "description": "Integration bundle for Symfony AI components",
             "support": {
-                "source": "https://github.com/symfony/ai-bundle/tree/v1.0.0-BETA1"
+                "source": "https://github.com/symfony/ai-bundle/tree/main"
             },
             "funding": [
                 {
@@ -2767,20 +2897,193 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-26T14:03:07+00:00"
+            "time": "2026-11-03T20:39:36+00:00"
         },
         {
-            "name": "symfony/ai-platform",
-            "version": "v1.0.0-BETA1",
+            "name": "symfony/ai-generic-platform",
+            "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/ai-platform.git",
-                "reference": "4ac262078d1f00c03805be2ab4042ae39fe3bc85"
+                "url": "https://github.com/symfony/ai-generic-platform.git",
+                "reference": "ea6ca3d9d02b3d33f8140731feff5a871b803e61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ai-platform/zipball/4ac262078d1f00c03805be2ab4042ae39fe3bc85",
-                "reference": "4ac262078d1f00c03805be2ab4042ae39fe3bc85",
+                "url": "https://api.github.com/repos/symfony/ai-generic-platform/zipball/ea6ca3d9d02b3d33f8140731feff5a871b803e61",
+                "reference": "ea6ca3d9d02b3d33f8140731feff5a871b803e61",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2",
+                "symfony/ai-platform": "^1.0",
+                "symfony/http-client": "^7.3|^8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpstan/phpstan-strict-rules": "^2.0",
+                "phpunit/phpunit": "^11.5.53"
+            },
+            "default-branch": true,
+            "type": "symfony-ai-platform",
+            "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/ai",
+                    "name": "symfony/ai"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\AI\\Platform\\Bridge\\Generic\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Christopher Hertel",
+                    "email": "mail@christopher-hertel.de"
+                },
+                {
+                    "name": "Oskar Stark",
+                    "email": "oskarstark@googlemail.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Generic platform bridge for Symfony AI",
+            "keywords": [
+                "Bridge",
+                "ai",
+                "generic",
+                "platform"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/ai-generic-platform/tree/main"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-10-27T21:08:58+00:00"
+        },
+        {
+            "name": "symfony/ai-mistral-platform",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/ai-mistral-platform.git",
+                "reference": "2817d055fc1679035daa36622e4439c116eb11a0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/ai-mistral-platform/zipball/2817d055fc1679035daa36622e4439c116eb11a0",
+                "reference": "2817d055fc1679035daa36622e4439c116eb11a0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2",
+                "symfony/ai-generic-platform": "^1.0",
+                "symfony/ai-platform": "^1.0",
+                "symfony/http-client": "^7.3|^8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpstan/phpstan-strict-rules": "^2.0",
+                "phpunit/phpunit": "^11.5.53"
+            },
+            "default-branch": true,
+            "type": "symfony-ai-platform",
+            "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/ai",
+                    "name": "symfony/ai"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\AI\\Platform\\Bridge\\Mistral\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Christopher Hertel",
+                    "email": "mail@christopher-hertel.de"
+                },
+                {
+                    "name": "Oskar Stark",
+                    "email": "oskarstark@googlemail.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Mistral platform bridge for Symfony AI",
+            "keywords": [
+                "Bridge",
+                "ai",
+                "mistral",
+                "platform"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/ai-mistral-platform/tree/main"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-11-03T20:47:22+00:00"
+        },
+        {
+            "name": "symfony/ai-platform",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/ai-platform.git",
+                "reference": "66cadaedcb45ecb8540f517743c75ea0779892f8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/ai-platform/zipball/66cadaedcb45ecb8540f517743c75ea0779892f8",
+                "reference": "66cadaedcb45ecb8540f517743c75ea0779892f8",
                 "shasum": ""
             },
             "require": {
@@ -2818,6 +3121,7 @@
                 "symfony/var-dumper": "^7.3|^8.0",
                 "symfony/yaml": "^7.3|^8.0"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "thanks": {
@@ -2887,7 +3191,7 @@
                 "voyage"
             ],
             "support": {
-                "source": "https://github.com/symfony/ai-platform/tree/v1.0.0-BETA1"
+                "source": "https://github.com/symfony/ai-platform/tree/main"
             },
             "funding": [
                 {
@@ -2907,7 +3211,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-26T14:03:07+00:00"
+            "time": "2026-11-03T20:47:22+00:00"
         },
         {
             "name": "symfony/asset-mapper",
@@ -4729,21 +5033,23 @@
         },
         {
             "name": "symfony/mcp-bundle",
-            "version": "v1.0.0-BETA1",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/mcp-bundle.git",
-                "reference": "0ab9d115aea774c93b8629c4a0ccc6751b8326f8"
+                "reference": "7dde42122d3ce3adfe6e2f697986180a4f4c6f87"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/mcp-bundle/zipball/0ab9d115aea774c93b8629c4a0ccc6751b8326f8",
-                "reference": "0ab9d115aea774c93b8629c4a0ccc6751b8326f8",
+                "url": "https://api.github.com/repos/symfony/mcp-bundle/zipball/7dde42122d3ce3adfe6e2f697986180a4f4c6f87",
+                "reference": "7dde42122d3ce3adfe6e2f697986180a4f4c6f87",
                 "shasum": ""
             },
             "require": {
                 "mcp/sdk": "^0.9",
                 "php-http/discovery": "^1.20",
+                "psr/http-factory-implementation": "*",
+                "psr/simple-cache": "^1.0|^2.0|^3.0",
                 "symfony/config": "^7.3|^8.0",
                 "symfony/console": "^7.3|^8.0",
                 "symfony/dependency-injection": "^7.3|^8.0",
@@ -4767,6 +5073,7 @@
             "suggest": {
                 "symfony/lock": "Required for a session lock with any store but \"file\"."
             },
+            "default-branch": true,
             "type": "symfony-bundle",
             "extra": {
                 "thanks": {
@@ -4795,7 +5102,7 @@
             ],
             "description": "Symfony integration bundle for Model Context Protocol (via official mcp/sdk)",
             "support": {
-                "source": "https://github.com/symfony/mcp-bundle/tree/v1.0.0-BETA1"
+                "source": "https://github.com/symfony/mcp-bundle/tree/main"
             },
             "funding": [
                 {
@@ -4815,7 +5122,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-22T23:42:24+00:00"
+            "time": "2026-10-27T20:15:27+00:00"
         },
         {
             "name": "symfony/mercure",
@@ -12224,12 +12531,46 @@
             "time": "2026-10-25T14:40:25+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "symfony/ai-bundle",
+            "version": "dev-main",
+            "alias": "1.0.0-BETA2",
+            "alias_normalized": "1.0.0.0-beta2"
+        },
+        {
+            "package": "symfony/ai-generic-platform",
+            "version": "dev-main",
+            "alias": "1.0.0-BETA2",
+            "alias_normalized": "1.0.0.0-beta2"
+        },
+        {
+            "package": "symfony/ai-mistral-platform",
+            "version": "dev-main",
+            "alias": "1.0.0-BETA2",
+            "alias_normalized": "1.0.0.0-beta2"
+        },
+        {
+            "package": "symfony/ai-platform",
+            "version": "dev-main",
+            "alias": "1.0.0-BETA2",
+            "alias_normalized": "1.0.0.0-beta2"
+        },
+        {
+            "package": "symfony/mcp-bundle",
+            "version": "dev-main",
+            "alias": "1.0.0-BETA2",
+            "alias_normalized": "1.0.0.0-beta2"
+        }
+    ],
     "minimum-stability": "beta",
     "stability-flags": {
         "mcp/sdk": 10,
-        "symfony/ai-bundle": 10,
-        "symfony/mcp-bundle": 10
+        "symfony/ai-bundle": 20,
+        "symfony/ai-generic-platform": 20,
+        "symfony/ai-mistral-platform": 20,
+        "symfony/ai-platform": 20,
+        "symfony/mcp-bundle": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
