@@ -3,38 +3,49 @@
 {% block title %}{{ show.title }}{% endblock %}
 
 {% block body %}
-    <main class="show">
-        <header>
-            <h1>{{ show.title }}</h1>
-            <p>{{ show.description }}</p>
-            <p class="subscribe">
-                Subscribe in your podcast app: <a href="{{ url('app_feed') }}">{{ url('app_feed') }}</a>
-            </p>
+    <main class="container py-5" style="max-width: 48rem">
+        <header class="mb-5">
+            <h1 class="display-5 fw-bold">{{ show.title }}</h1>
+            <p class="lead text-body-secondary">{{ show.description }}</p>
+            <div class="input-group" data-controller="clipboard" data-clipboard-source-value="{{ url('app_feed') }}">
+                <span class="input-group-text">Podcast feed</span>
+                <input class="form-control" value="{{ url('app_feed') }}" readonly aria-label="Podcast feed URL">
+                <twig:Button color="primary" data-action="clipboard#copy">
+                    <span data-clipboard-target="idle">Copy</span>
+                    <span data-clipboard-target="success">Copied!</span>
+                </twig:Button>
+            </div>
         </header>
 
         {% for item in episodes %}
             {% set episode = item.episode %}
-            <article class="episode">
-                <h2>{{ episode.title }}</h2>
-                <p class="meta">
-                    {{ episode.publishedAt|date('j F Y') }} · {{ episode.duration }}
-                </p>
-                <audio controls preload="none" src="{{ path('app_episode_audio', {id: episode.id}) }}"></audio>
+            <twig:Card class="mb-4 shadow-sm">
+                <twig:Card:Body>
+                    <twig:Card:Title tag="h2" class="h4">{{ episode.title }}</twig:Card:Title>
+                    <twig:Card:Subtitle class="mb-3 text-body-secondary">
+                        {{ episode.publishedAt|date('j F Y') }}
+                        <twig:Badge color="secondary" pill class="ms-2">{{ episode.duration }}</twig:Badge>
+                    </twig:Card:Subtitle>
+                    <audio class="w-100 mb-3" controls preload="none" src="{{ path('app_episode_audio', {id: episode.id}) }}"></audio>
 
-                <details>
-                    <summary>Transcript</summary>
-                    {% for line in item.script.lines %}
-                        <p><strong>{{ show.hosts[line.host].name ?? line.host }}</strong> {{ line.text }}</p>
-                    {% endfor %}
-                </details>
-
-                <details>
-                    <summary>Sources</summary>
-                    {{ include('podcast/_sources.html.twig', {brief: item.brief}) }}
-                </details>
-            </article>
+                    <twig:Accordion id="episode-{{ episode.id }}" flush>
+                        <twig:Accordion:Item id="transcript-{{ episode.id }}" label="Transcript" headingTag="h3">
+                            {% for line in item.script.lines %}
+                                <p><strong>{{ show.hosts[line.host].name ?? line.host }}</strong> {{ line.text }}</p>
+                            {% endfor %}
+                        </twig:Accordion:Item>
+                        <twig:Accordion:Item id="sources-{{ episode.id }}" label="Sources" headingTag="h3">
+                            {{ include('podcast/_sources.html.twig', {brief: item.brief}) }}
+                        </twig:Accordion:Item>
+                    </twig:Accordion>
+                </twig:Card:Body>
+            </twig:Card>
         {% else %}
-            <p class="empty">No episode yet. Connect your MCP client to <code>{{ url('_mcp_endpoint_default') }}</code> and ask it for one.</p>
+            <twig:Card class="text-center">
+                <twig:Card:Body class="empty py-5 text-body-secondary">
+                    No episode yet. Connect your MCP client to <code>{{ url('_mcp_endpoint_default') }}</code> and ask it for one.
+                </twig:Card:Body>
+            </twig:Card>
         {% endfor %}
     </main>
 {% endblock %}
