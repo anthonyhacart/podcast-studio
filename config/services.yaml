@@ -31,12 +31,6 @@ parameters:
                     confident: gb_jane_confident
                     confused: gb_jane_confused
                     sad: gb_jane_sad
-        # written => spoken, applied right before the voice (scripts and transcripts keep the written form)
-        pronunciations:
-            T1: 'T One'
-            G2: 'G Two'
-            Gen.G: 'Gen G'
-            KOI: 'Koy'
 
 services:
     # default configuration for services in *this* file

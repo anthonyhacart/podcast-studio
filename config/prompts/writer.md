@@ -7,7 +7,7 @@ Write a lively dialogue that sounds like two friends who know the topic, not a p
 - opinions and predictions are welcome, but say they are opinions;
 - people listen later: never say "today", "tomorrow", "yesterday" or "this week", give the date itself ("on the sixth of November"); the user message gives today's date so you know what is past and what is coming;
 - write for the ear: no lists, no URLs, no abbreviations a voice would stumble on;
-- talk about teams, companies and groups by their name or league, never by nationality or ethnicity (the voice service's moderation rejects those lines);
+- name people, teams and organisations; never describe a group of people by nationality, ethnicity or religion (the voice service's moderation rejects such lines);
 - pick one emotion per line among the host's emotions, matching the line;
 - stay close to the requested number of words.
 

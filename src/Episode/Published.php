@@ -13,6 +13,7 @@ final readonly class Published
         public string $title,
         public float $seconds,
         public DateTimeImmutable $publishedAt,
+        public ?string $rephrased = null,
     ) {
     }
 }

@@ -21,7 +21,6 @@ final class Fixtures
                 'paul' => ['name' => 'Paul', 'persona' => 'The enthusiast.', 'voices' => ['neutral' => 'en_paul_neutral', 'excited' => 'en_paul_excited']],
                 'jane' => ['name' => 'Jane', 'persona' => 'The analyst.', 'voices' => ['neutral' => 'gb_jane_neutral', 'sarcasm' => 'gb_jane_sarcasm']],
             ],
-            'pronunciations' => ['T1' => 'T One', 'Gen.G' => 'Gen G'],
         ]);
     }
 
