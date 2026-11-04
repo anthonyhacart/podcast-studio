@@ -7,6 +7,30 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.show:
+        title: 'Podcast Studio'
+        language: en
+        hosts:
+            paul:
+                name: Paul
+                persona: 'The enthusiast. Gets carried away, loves underdogs and big moments.'
+                voices:
+                    neutral: en_paul_neutral
+                    excited: en_paul_excited
+                    happy: en_paul_happy
+                    confident: en_paul_confident
+                    sad: en_paul_sad
+                    frustrated: en_paul_frustrated
+            jane:
+                name: Jane
+                persona: 'The analyst. Dry British wit, checks the facts, deflates the hype.'
+                voices:
+                    neutral: gb_jane_neutral
+                    sarcasm: gb_jane_sarcasm
+                    curious: gb_jane_curious
+                    confident: gb_jane_confident
+                    confused: gb_jane_confused
+                    sad: gb_jane_sad
 
 services:
     # default configuration for services in *this* file
