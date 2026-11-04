@@ -12,7 +12,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * One folder per episode: brief.json, script.json, then episode.mp3 and episode.json once published.
+ * One folder per episode: brief.json, script.json, then episode.mp3, transcript.vtt and episode.json once published.
  */
 final readonly class EpisodeRepository
 {
@@ -22,7 +22,7 @@ final readonly class EpisodeRepository
         private Filesystem $filesystem,
         private SerializerInterface $serializer,
         private ClockInterface $clock,
-        #[Autowire('%kernel.project_dir%/var/episodes')] private string $dir,
+        #[Autowire(param: 'app.episodes_dir')] private string $dir,
     ) {
     }
 
@@ -51,10 +51,45 @@ final readonly class EpisodeRepository
         return $this->read($id, 'script.json', Script::class);
     }
 
-    public function savePublished(string $id, Published $episode, string $mp3): void
+    public function savePublished(string $id, Published $episode, string $mp3, string $transcript): void
     {
         $this->filesystem->dumpFile($this->path($id, 'episode.mp3'), $mp3);
+        $this->filesystem->dumpFile($this->path($id, 'transcript.vtt'), $transcript);
         $this->write($id, 'episode.json', $episode);
+    }
+
+    /**
+     * @return list<Published> newest first
+     */
+    public function published(): array
+    {
+        $episodes = [];
+        foreach (glob("{$this->dir}/*/episode.json") ?: [] as $file) {
+            $episodes[] = $this->read(basename(\dirname($file)), 'episode.json', Published::class);
+        }
+        usort($episodes, static fn (Published $a, Published $b) => $b->publishedAt <=> $a->publishedAt);
+
+        return $episodes;
+    }
+
+    public function audioPath(string $id): string
+    {
+        return $this->publishedFile($id, 'episode.mp3');
+    }
+
+    public function transcriptPath(string $id): string
+    {
+        return $this->publishedFile($id, 'transcript.vtt');
+    }
+
+    private function publishedFile(string $id, string $file): string
+    {
+        $path = $this->path($id, $file);
+        if (!$this->filesystem->exists($path)) {
+            throw new InvalidArgumentException(\sprintf('Episode "%s" is not published.', $id));
+        }
+
+        return $path;
     }
 
     private function write(string $id, string $file, object $data): void

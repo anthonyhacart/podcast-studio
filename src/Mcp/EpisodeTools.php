@@ -86,7 +86,7 @@ final readonly class EpisodeTools
         return [
             'id' => $episode->id,
             'title' => $episode->title,
-            'duration' => \sprintf('%d:%02d', intdiv((int) $episode->seconds, 60), (int) $episode->seconds % 60),
+            'duration' => $episode->duration(),
             'status' => 'published',
         ] + ($episode->rephrased ? ['rephrased' => $episode->rephrased.'. Tell the user.'] : []);
     }

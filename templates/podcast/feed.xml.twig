@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:podcast="https://podcastindex.org/namespace/1.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>{{ show.title }}</title>
+        <link>{{ url('app_home') }}</link>
+        <atom:link href="{{ url('app_feed') }}" rel="self" type="application/rss+xml"/>
+        <description>{{ show.description }}</description>
+        <language>{{ show.language }}</language>
+        <itunes:author>{{ show.author }}</itunes:author>
+        <itunes:explicit>false</itunes:explicit>
+        <itunes:category text="News"/>
+        {% for item in episodes %}
+            {% set episode = item.episode %}
+            <item>
+                <title>{{ episode.title }}</title>
+                <guid isPermaLink="false">{{ episode.id }}</guid>
+                <pubDate>{{ episode.publishedAt|date('r') }}</pubDate>
+                <enclosure url="{{ url('app_episode_audio', {id: episode.id}) }}" length="{{ item.bytes }}" type="audio/mpeg"/>
+                <itunes:duration>{{ episode.seconds|round }}</itunes:duration>
+                <podcast:transcript url="{{ url('app_episode_transcript', {id: episode.id}) }}" type="text/vtt"/>
+                {# show notes: the sources the hosts used #}
+                <description><![CDATA[{{ include('podcast/_sources.html.twig', {brief: item.brief})|replace({']]>': ']]&gt;'})|raw }}]]></description>
+            </item>
+        {% endfor %}
+    </channel>
+</rss>

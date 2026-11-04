@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ show.title }}{% endblock %}
+
+{% block body %}
+    <main class="show">
+        <header>
+            <h1>{{ show.title }}</h1>
+            <p>{{ show.description }}</p>
+            <p class="subscribe">
+                Subscribe in your podcast app: <a href="{{ url('app_feed') }}">{{ url('app_feed') }}</a>
+            </p>
+        </header>
+
+        {% for item in episodes %}
+            {% set episode = item.episode %}
+            <article class="episode">
+                <h2>{{ episode.title }}</h2>
+                <p class="meta">
+                    {{ episode.publishedAt|date('j F Y') }} · {{ episode.duration }}
+                </p>
+                <audio controls preload="none" src="{{ path('app_episode_audio', {id: episode.id}) }}"></audio>
+
+                <details>
+                    <summary>Transcript</summary>
+                    {% for line in item.script.lines %}
+                        <p><strong>{{ show.hosts[line.host].name ?? line.host }}</strong> {{ line.text }}</p>
+                    {% endfor %}
+                </details>
+
+                <details>
+                    <summary>Sources</summary>
+                    {{ include('podcast/_sources.html.twig', {brief: item.brief}) }}
+                </details>
+            </article>
+        {% else %}
+            <p class="empty">No episode yet. Connect your MCP client to <code>{{ url('_mcp_endpoint_default') }}</code> and ask it for one.</p>
+        {% endfor %}
+    </main>
+{% endblock %}

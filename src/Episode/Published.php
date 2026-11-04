@@ -16,4 +16,12 @@ final readonly class Published
         public ?string $rephrased = null,
     ) {
     }
+
+    /**
+     * e.g. "2:05".
+     */
+    public function duration(): string
+    {
+        return \sprintf('%d:%02d', intdiv((int) round($this->seconds), 60), (int) round($this->seconds) % 60);
+    }
 }

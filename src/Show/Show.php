@@ -12,16 +12,20 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 final readonly class Show
 {
     public string $title;
+    public string $description;
+    public string $author;
     public string $language;
     /** @var array<string, Host> */
     public array $hosts;
 
     /**
-     * @param array{title: string, language: string, hosts: array<string, array{name: string, persona: string, voices: array<string, string>}>} $config
+     * @param array{title: string, description: string, author: string, language: string, hosts: array<string, array{name: string, persona: string, voices: array<string, string>}>} $config
      */
     public function __construct(#[Autowire(param: 'app.show')] array $config)
     {
         $this->title = $config['title'];
+        $this->description = $config['description'];
+        $this->author = $config['author'];
         $this->language = $config['language'];
         $hosts = [];
         foreach ($config['hosts'] as $id => $host) {

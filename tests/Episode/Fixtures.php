@@ -12,10 +12,14 @@ use App\Show\Show;
 
 final class Fixtures
 {
+    public const PAUSE = __DIR__.'/../../resources/audio/pause.mp3';
+
     public static function show(): Show
     {
         return new Show([
             'title' => 'Test Show',
+            'description' => 'A show for tests.',
+            'author' => 'Tests',
             'language' => 'en',
             'hosts' => [
                 'paul' => ['name' => 'Paul', 'persona' => 'The enthusiast.', 'voices' => ['neutral' => 'en_paul_neutral', 'excited' => 'en_paul_excited']],

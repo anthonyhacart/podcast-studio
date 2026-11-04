@@ -7,8 +7,11 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.episodes_dir: '%kernel.project_dir%/var/episodes'
     app.show:
         title: 'Podcast Studio'
+        description: 'Two AI hosts, Paul and Jane, on whatever you ask them about. Every episode is drafted from the sources you bring, reviewed with you in your MCP client, then voiced.'
+        author: 'Podcast Studio'
         language: en
         hosts:
             paul:
@@ -45,3 +48,7 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+when@test:
+    parameters:
+        app.episodes_dir: '%kernel.cache_dir%/episodes'

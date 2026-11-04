@@ -16,6 +16,7 @@ final readonly class Studio
         private ScriptWriter $writer,
         private Voice $voice,
         private Mp3Joiner $joiner,
+        private Transcript $transcript,
         private ClockInterface $clock,
     ) {
     }
@@ -62,9 +63,9 @@ final readonly class Studio
             $clips = $this->voice->speak($script);
         }
 
-        [$mp3, $seconds] = $this->joiner->join($clips);
-        $episode = new Published($id, $script->title, $seconds, $this->clock->now(), $rephrased);
-        $this->episodes->savePublished($id, $episode, $mp3);
+        [$mp3, $timings] = $this->joiner->join($clips);
+        $episode = new Published($id, $script->title, $timings[array_key_last($timings)][1] ?? 0.0, $this->clock->now(), $rephrased);
+        $this->episodes->savePublished($id, $episode, $mp3, $this->transcript->vtt($script, $timings));
 
         return $episode;
     }

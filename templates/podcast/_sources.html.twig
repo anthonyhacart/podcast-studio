@@ -1,0 +1,7 @@
+<p>{{ brief.topic }}</p>
+<p>Sources:</p>
+<ul>
+    {% for source in brief.sources %}
+        <li>{% if source.url %}<a href="{{ source.url }}">{{ source.title }}</a>{% else %}{{ source.title }}{% endif %}</li>
+    {% endfor %}
+</ul>

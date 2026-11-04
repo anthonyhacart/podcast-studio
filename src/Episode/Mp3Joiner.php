@@ -27,20 +27,25 @@ final readonly class Mp3Joiner
     /**
      * @param list<string> $clips MP3 file contents, in order
      *
-     * @return array{string, float} the joined MP3 and its duration in seconds
+     * @return array{string, list<array{float, float}>} the joined MP3, and when each clip starts and ends, in seconds
      */
     public function join(array $clips): array
     {
         [$pause, $pauseSeconds] = $this->frames($this->filesystem->readFile($this->pausePath));
         $mp3 = '';
+        $timings = [];
         $seconds = 0.0;
         foreach ($clips as $i => $clip) {
             [$frames, $duration] = $this->frames($clip);
-            $mp3 .= ($i > 0 ? $pause : '').$frames;
-            $seconds += ($i > 0 ? $pauseSeconds : 0.0) + $duration;
+            if ($i > 0) {
+                $mp3 .= $pause;
+                $seconds += $pauseSeconds;
+            }
+            $mp3 .= $frames;
+            $timings[] = [$seconds, $seconds += $duration];
         }
 
-        return [$mp3, $seconds];
+        return [$mp3, $timings];
     }
 
     /**

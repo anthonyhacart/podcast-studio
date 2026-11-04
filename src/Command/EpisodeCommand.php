@@ -36,7 +36,7 @@ final readonly class EpisodeCommand
         }
 
         $episode = $this->studio->publish($id);
-        $io->success(\sprintf('Episode %s published (%d:%02d)', $episode->id, intdiv((int) $episode->seconds, 60), (int) $episode->seconds % 60));
+        $io->success(\sprintf('Episode %s published (%s)', $episode->id, $episode->duration()));
 
         return 0;
     }
