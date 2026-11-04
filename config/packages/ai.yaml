@@ -2,6 +2,8 @@ ai:
     platform:
         mistral:
             api_key: '%env(MISTRAL_API_KEY)%'
+            # records/replays API responses when CASSETTE is set (make demo)
+            http_client: App\Http\ReplayableHttpClient
 
     agent:
         # Writes the episode script from a brief; ScriptWriter checks it and asks again once if needed.

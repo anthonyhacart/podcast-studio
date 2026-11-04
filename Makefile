@@ -24,8 +24,9 @@ db: ## Create the database and run migrations
 	$(CONSOLE) doctrine:database:create --if-not-exists
 	$(CONSOLE) doctrine:migrations:migrate --no-interaction --allow-no-migration
 
-demo: ## Run the demo (replay mode, no API key needed) — define per POC
-	@echo "TODO: wire the replay/fixtures demo for this POC"
+demo: ## Make an episode from recorded API responses (no API key needed)
+	$(DC) exec -e CASSETTE=fixtures/cassettes/worlds-2026.json php php bin/console app:episode fixtures/briefs/worlds-2026.json
+	@printf "\n✓ Listen → http://localhost:%s\n" "$$(grep -E '^HTTP_PORT=' .env | cut -d= -f2)"
 
 ## —— Dev ————————————————————————————————————————————————————
 sh: ## Shell in the PHP container
