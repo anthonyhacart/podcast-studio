@@ -8,6 +8,7 @@ use App\Episode\Brief;
 use App\Episode\EpisodeRepository;
 use App\Episode\Published;
 use App\Episode\Script;
+use App\Mailbox\Mailbox;
 use App\Show\Show;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,13 +25,14 @@ final class PodcastController extends AbstractController
     public function __construct(
         private readonly EpisodeRepository $episodes,
         private readonly Show $show,
+        private readonly Mailbox $mailbox,
     ) {
     }
 
     #[Route('/', name: 'app_home', methods: ['GET'])]
     public function home(): Response
     {
-        return $this->render('podcast/home.html.twig', ['show' => $this->show, 'episodes' => $this->episodes()]);
+        return $this->render('podcast/home.html.twig', ['show' => $this->show, 'episodes' => $this->episodes(), 'questions' => $this->mailbox->waiting()]);
     }
 
     #[Route('/feed.xml', name: 'app_feed', methods: ['GET'], format: 'xml')]

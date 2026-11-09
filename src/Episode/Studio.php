@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Episode;
 
+use App\Mailbox\Mailbox;
 use Symfony\AI\Store\IndexerInterface;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 
 /**
  * The editorial workflow: draft a script from a brief, revise it on request, publish it
- * as audio, and add it to the show's memory.
+ * as audio, add it to the show's memory, and take the questions it answers out of the mailbox.
  */
 final readonly class Studio
 {
@@ -22,6 +23,7 @@ final readonly class Studio
         private Transcript $transcript,
         private ClockInterface $clock,
         #[Target('archive')] private IndexerInterface $archive,
+        private Mailbox $mailbox,
     ) {
     }
 
@@ -71,6 +73,7 @@ final readonly class Studio
         $episode = new Published($id, $script->title, $timings[array_key_last($timings)][1] ?? 0.0, $this->clock->now(), $rephrased);
         $this->episodes->savePublished($id, $episode, $mp3, $this->transcript->vtt($script, $timings));
         $this->archive->index($id);
+        $this->mailbox->remove($this->episodes->brief($id)->questions);
 
         return $episode;
     }

@@ -11,6 +11,8 @@ use App\Episode\Script;
 use App\Episode\Source;
 use App\Episode\Studio;
 use App\Episode\UnspeakableLineException;
+use App\Mailbox\Mailbox;
+use App\Mailbox\Question;
 use App\Show\Show;
 use InvalidArgumentException;
 use Mcp\Capability\Attribute\McpTool;
@@ -27,14 +29,16 @@ final readonly class EpisodeTools
         private Studio $studio,
         private Show $show,
         private PastEpisodes $pastEpisodes,
+        private Mailbox $mailbox,
     ) {
     }
 
     /**
-     * @param string                                                  $topic   what the episode is about
-     * @param list<array{title: string, notes: string, url?: string}> $sources what you found on the topic: the hosts only use these facts, so put every fact they need in the notes
-     * @param int                                                     $minutes target length, 1 to 5
-     * @param string|null                                             $tone    e.g. "fun, for fans who missed the news"
+     * @param string                                                  $topic     what the episode is about
+     * @param list<array{title: string, notes: string, url?: string}> $sources   what you found on the topic: the hosts only use these facts, so put every fact they need in the notes
+     * @param int                                                     $minutes   target length, 1 to 5
+     * @param string|null                                             $tone      e.g. "fun, for fans who missed the news"
+     * @param list<string>                                            $questions ids of listener questions (listener_questions) the episode answers
      *
      * @return array<string, mixed>
      */
@@ -53,10 +57,17 @@ final readonly class EpisodeTools
         array $sources,
         int $minutes = 2,
         ?string $tone = null,
+        #[Schema(items: ['type' => 'string'])]
+        array $questions = [],
     ): array {
-        $brief = new Brief($topic, array_map(static fn (array $s) => new Source($s['title'], $s['notes'], $s['url'] ?? null), $sources), max(1, min(5, $minutes)), $tone);
-
-        return $this->tell(function () use ($brief) {
+        return $this->tell(function () use ($topic, $sources, $minutes, $tone, $questions) {
+            $brief = new Brief(
+                $topic,
+                array_map(static fn (array $s) => new Source($s['title'], $s['notes'], $s['url'] ?? null), $sources),
+                max(1, min(5, $minutes)),
+                $tone,
+                array_map($this->mailbox->question(...), $questions),
+            );
             [$id, $script] = $this->studio->draft($brief);
 
             return $this->review($id, $script);
@@ -91,6 +102,20 @@ final readonly class EpisodeTools
             'duration' => $episode->duration(),
             'status' => 'published',
         ] + ($episode->rephrased ? ['rephrased' => $episode->rephrased.'. Tell the user.'] : []);
+    }
+
+    /**
+     * @return list<array{id: string, from: string, question: string, asked: string}>
+     */
+    #[McpTool(name: 'listener_questions', description: 'List the questions listeners asked the hosts by voice on the show\'s page, waiting for an episode. Pass the ids of those an episode should answer to draft_episode, with sources that answer them.')]
+    public function questions(): array
+    {
+        return array_map(static fn (Question $q) => [
+            'id' => $q->id,
+            'from' => $q->name ?? 'a listener',
+            'question' => $q->text,
+            'asked' => $q->askedAt->format('j F Y'),
+        ], $this->mailbox->waiting());
     }
 
     /**

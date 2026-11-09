@@ -1,0 +1,70 @@
+{
+    "interactions": [
+        {
+            "request": {
+                "method": "POST",
+                "url": "https://api.mistral.ai/v1/audio/transcriptions",
+                "signature": "bd983f243669279993e23d2a80f07072",
+                "signature_v2": "a86aee6fa3db4ac32173bdb2e13d8287",
+                "headers": {
+                    "content-type": [
+                        "multipart/form-data"
+                    ],
+                    "authorization": [
+                        "[redacted]"
+                    ]
+                },
+                "body": {
+                    "model": "voxtral-mini-transcribe-3-0",
+                    "file": "[resource question.mp3, 37294 bytes]"
+                }
+            },
+            "response": {
+                "status": 200,
+                "headers": {
+                    "content-type": [
+                        "application/json"
+                    ],
+                    "x-max-retry-attempts-reached": [
+                        "false"
+                    ],
+                    "x-ratelimit-limit-audio-seconds-minute": [
+                        "7200"
+                    ],
+                    "x-ratelimit-remaining-audio-seconds-minute": [
+                        "7190"
+                    ],
+                    "x-ratelimit-audio-seconds-query-cost": [
+                        "5"
+                    ],
+                    "x-ratelimit-limit-req-minute": [
+                        "360"
+                    ],
+                    "x-ratelimit-remaining-req-minute": [
+                        "359"
+                    ],
+                    "server": [
+                        "cloudflare"
+                    ],
+                    "access-control-allow-origin": [
+                        "*"
+                    ],
+                    "set-cookie": [
+                        "[redacted]"
+                    ],
+                    "strict-transport-security": [
+                        "max-age=15552000; includeSubDomains; preload"
+                    ],
+                    "x-content-type-options": [
+                        "nosniff"
+                    ],
+                    "content-encoding": [
+                        "gzip"
+                    ]
+                },
+                "body_format": "json",
+                "body": "{\"model\":\"voxtral-mini-transcribe-3-0\",\"text\":\"Hi, Paul and Jane. It's Marie from Lyon. Who do you think will win the world's final, and why?\",\"language\":null,\"segments\":[],\"usage\":{\"prompt_audio_seconds\":5,\"prompt_tokens\":3,\"total_tokens\":405,\"completion_tokens\":27,\"prompt_tokens_details\":{\"cached_tokens\":1,\"audio_tokens\":375},\"service_tier\":\"standard\"},\"finish_reason\":null}"
+            }
+        }
+    ]
+}

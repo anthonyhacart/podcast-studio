@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Episode;
 
+use App\Episode\Brief;
 use App\Episode\InvalidScriptException;
 use App\Episode\Script;
 use App\Episode\ScriptChecker;
 use App\Episode\ScriptWriter;
+use App\Mailbox\Question;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Symfony\AI\Agent\AgentInterface;
 use Symfony\AI\Agent\Execution\ExecutionInterface;
@@ -28,6 +31,26 @@ final class ScriptWriterTest extends TestCase
         self::assertSame('Episode', $script->title);
         self::assertStringContainsString('Today: Wednesday 4 November 2026.', $this->lastUserText());
         self::assertStringContainsString('[2] Teams', $this->lastUserText());
+    }
+
+    public function testAsksToAnswerTheListenerQuestionsOfTheBrief(): void
+    {
+        $brief = Fixtures::brief();
+        $brief = new Brief($brief->topic, $brief->sources, $brief->minutes, questions: [
+            new Question('01a1bdf1-396d-7f14-bb1f-e2125edaad26', 'Who wins the final?', new DateTimeImmutable('2026-11-03'), 'Marie'),
+            new Question('01a1bdf1-3b4d-7b83-a431-fd39a0f6042c', 'Is LYON for real?', new DateTimeImmutable('2026-11-03')),
+        ]);
+
+        $this->writer(Fixtures::script())->write($brief);
+
+        self::assertStringEndsWith("Listener questions to answer on air:\n- Marie asks: Who wins the final?\n- A listener asks: Is LYON for real?\n", $this->lastUserText());
+    }
+
+    public function testAsksNothingOfListenersWithoutQuestions(): void
+    {
+        $this->writer(Fixtures::script())->write(Fixtures::brief());
+
+        self::assertStringNotContainsString('Listener questions', $this->lastUserText());
     }
 
     public function testAsksAgainWithTheProblemsFound(): void

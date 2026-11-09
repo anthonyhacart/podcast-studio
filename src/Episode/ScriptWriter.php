@@ -80,6 +80,11 @@ final readonly class ScriptWriter
             $sources .= \sprintf("[%d] %s%s\n%s\n\n", $i + 1, $source->title, $source->url ? " ({$source->url})" : '', $source->notes);
         }
 
+        $questions = '';
+        foreach ($brief->questions as $question) {
+            $questions .= \sprintf("- %s asks: %s\n", $question->name ?? 'A listener', $question->text);
+        }
+
         $tone = $brief->tone ?? "the show's usual tone";
         $words = $brief->minutes * self::WORDS_PER_MINUTE;
 
@@ -95,6 +100,6 @@ final readonly class ScriptWriter
             Sources:
 
             {$sources}
-            MESSAGE;
+            MESSAGE.('' === $questions ? '' : "Listener questions to answer on air:\n{$questions}");
     }
 }

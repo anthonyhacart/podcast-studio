@@ -1,6 +1,6 @@
 # Podcast Studio
 
-> Ask your AI assistant for a podcast episode on anything. It gathers the sources, two AI hosts write a sourced dialogue, you review the script in the conversation, and the voiced episode lands in a real podcast feed.
+> Ask your AI assistant for a podcast episode on anything. It gathers the sources, two AI hosts write a sourced dialogue, you review the script in the conversation, and the voiced episode lands in a real podcast feed. Listeners ask the hosts questions by voice; the hosts remember what they said.
 
 Built for the [Symfony AI & MCP Hackathon](https://symfony.com/hackathon) (November 2026).
 
@@ -38,11 +38,12 @@ Or, better, from an MCP client: see below.
 
 ## Using it from an MCP client
 
-The app is an MCP server with four tools:
+The app is an MCP server with five tools:
 
 | Tool | What it does |
 | --- | --- |
-| `draft_episode` | Writes the script from a topic and the sources the client gathered |
+| `listener_questions` | Lists the questions listeners recorded on the show's page |
+| `draft_episode` | Writes the script from a topic, the sources the client gathered and, optionally, listener questions |
 | `revise_episode` | Rewrites it following the editor's instructions |
 | `publish_episode` | Voices the approved script and publishes the episode to the feed |
 | `search_episodes` | Searches what the hosts said in past episodes, by meaning |
@@ -72,6 +73,7 @@ Then ask: *"Make me a 2-minute episode about the League of Legends Worlds quarte
 - **The client brings the material.** Claude has web search, your files, your repository. It sends the server a brief *with its sources*; the hosts only use those facts. The server never browses the web.
 - **The review is a conversation.** The server returns the script to the client, which compares it with the sources it gathered, flags what they do not state, and revises with you until you approve. The server's `instructions` tell any MCP client how to play that role.
 - **The studio is consistent whatever the client.** The show format, the hosts' personalities, the rules and the voices live on the server, in config.
+- **Listeners have a voice.** On the show's page, a listener records a question; Voxtral transcribes it and it waits in the mailbox (the audio is not kept). The client lists them with `listener_questions` and passes the ones an episode answers to `draft_episode`: a host reads the question out with the listener's name, and the hosts answer it from the sources. Publishing the episode empties them from the mailbox.
 - **The show remembers.** Every published line is embedded into a vector store. The writer agent has a `search_past_episodes` tool and decides itself what to look up (the topic, then each team or person in the brief), so the hosts refer back to what they said instead of repeating it. The client searches the same memory with `search_episodes`.
 
 ## How it works
@@ -95,19 +97,21 @@ Browser / podcast app ◀── /, /feed.xml, /episodes/{id}.mp3, /episodes/{id}
 | Store, Postgres bridge | The show's memory: one document per line, embedded with `mistral-embed`, indexed on publish | `src/Archive/EpisodeLoader.php`, `config/packages/ai.yaml` |
 | Structured output | A `Script` of `Line`s: host, emotion, text, cited sources | `src/Episode/Script.php`, `Line.php` |
 | Platform, Mistral bridge | Text to speech with Voxtral, all lines voiced concurrently | `src/Episode/Voice.php` |
+| Platform, Mistral bridge | Speech to text with Voxtral, for the listeners' questions (webm, mp4, mp3) | `src/Mailbox/Transcriber.php`, `assets/controllers/recorder_controller.js` |
 | Replay cassettes | `make demo` and the end-to-end test, without a key | `src/Replay/` |
-| MCP server (bundle + SDK) | The four tools, server `instructions`, readable tool errors | `src/Mcp/EpisodeTools.php`, `config/packages/mcp.yaml` |
+| MCP server (bundle + SDK) | The five tools, server `instructions`, readable tool errors | `src/Mcp/EpisodeTools.php`, `config/packages/mcp.yaml` |
 
 A few choices worth knowing:
 
 - **The code knows nothing about any topic.** The rules it checks are about structure: known hosts and emotions, sources that exist, length, and no "today" or "tomorrow" (people listen later).
 - **Facts are checked by the client, not by a second agent.** A server-side fact-checking agent was tried and dropped: with the models at hand it flagged faithful paraphrases and missed real errors. The client, which gathered the sources, does it better during the review.
 - **The voice service's moderation sometimes refuses a harmless line.** On publish, the writer rephrases that line only, the episode is voiced again, and the client is told what changed.
-- **Models are pinned.** Mistral's `-latest` aliases can point to older models (`voxtral-mini-tts-latest` is the v1 model that rejects the current voices; `mistral-large-latest` is 2512). The writer uses `mistral-medium-2604`, the voices `voxtral-mini-tts-3-0`, the memory `mistral-embed`.
+- **Models are pinned.** Mistral's `-latest` aliases can point to older models (`voxtral-mini-tts-latest` is the v1 model that rejects the current voices; `mistral-large-latest` is 2512). The writer uses `mistral-medium-2604`, the voices `voxtral-mini-tts-3-0`, the transcription `voxtral-mini-transcribe-3-0`, the memory `mistral-embed`.
 - **No ffmpeg.** Voxtral returns MP3 clips with the same format; `Mp3Joiner` concatenates their frames in PHP and adds up their duration, which also gives the transcript its timings.
-- **Episodes are files, the memory is Postgres.** One folder per episode in `var/episodes/`: `brief.json`, `script.json`, `episode.mp3`, `transcript.vtt`, `episode.json`. The memory is derived from them: `make console c="ai:store:index archive"` rebuilds it.
+- **Episodes and questions are files, the memory is Postgres.** One folder per episode in `var/episodes/`: `brief.json`, `script.json`, `episode.mp3`, `transcript.vtt`, `episode.json`; one JSON file per waiting question in `var/questions/`. The memory is derived from them: `make console c="ai:store:index archive"` rebuilds it.
 - **The memory is searched by meaning only.** The Postgres store answers the bundle's `Retriever` with a hybrid query that keeps only lines sharing a keyword with the query; `PastEpisodes` sends a vector query itself.
 - **A replay is exact.** With `CASSETTE` set, the clock stops on the recording day and the memory starts empty, in memory: the requests carry the date and what the writer finds, and they must match the recording (`src/Replay/`).
+- **Recording needs HTTPS** (or `localhost`): browsers only give the microphone to secure pages. The question form has no rate limiting or spam protection: it is a prototype.
 
 The show (title, hosts, personas, voices per emotion) is configured in the `app.show` parameter of `config/services.yaml`.
 
@@ -115,7 +119,7 @@ The show (title, hosts, personas, voices per emotion) is configured in the `app.
 
 ```bash
 make qa        # coding standards + PHPStan (max) + tests, including a full episode replayed from cassettes
-make cassette  # records that cassette again, live
+make cassette  # records the cassettes again, live
 make e2e    # browser tests with Panther
 ```
 

@@ -6,10 +6,11 @@ mcp:
             description: 'A podcast studio: two AI hosts write and voice episodes from the sources you bring.'
             instructions: |
                 You are the editor of a two-host podcast. To make an episode:
-                1. Gather sources on the topic yourself (web search, files, what the user gave you) and put every fact the hosts need in the notes of each source: the hosts only use these facts.
-                2. Call draft_episode, then show the script to the user. Before that, compare each line with your sources and point out any claim they do not state.
-                3. Call revise_episode with the fixes and the user's changes, as many times as needed.
-                4. Call publish_episode only once the user approves the script.
+                1. Check listener_questions: when one fits the topic, or the user asks for a mailbag episode, pass its id to draft_episode and bring sources that answer it.
+                2. Gather sources on the topic yourself (web search, files, what the user gave you) and put every fact the hosts need in the notes of each source: the hosts only use these facts.
+                3. Call draft_episode, then show the script to the user. Before that, compare each line with your sources and point out any claim they do not state.
+                4. Call revise_episode with the fixes and the user's changes, as many times as needed.
+                5. Call publish_episode only once the user approves the script.
             registry: 'App\Mcp\'
             http:
                 path: /mcp

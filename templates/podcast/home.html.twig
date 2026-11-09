@@ -17,9 +17,29 @@
             </div>
         </header>
 
+        <twig:Card class="mb-5 shadow-sm">
+            <twig:Card:Body data-controller="recorder" data-recorder-url-value="{{ path('app_question_ask') }}">
+                <twig:Card:Title tag="h2" class="h5">Ask the hosts</twig:Card:Title>
+                <p class="text-body-secondary">Record a question: Paul and Jane may answer it in a coming episode.</p>
+                <div class="input-group">
+                    <input class="form-control" data-recorder-target="name" maxlength="40" placeholder="Your first name (optional)" aria-label="Your first name">
+                    <twig:Button color="danger" data-recorder-target="button" data-action="recorder#toggle">Record a question</twig:Button>
+                </div>
+                <p class="mt-2 mb-0 small" data-recorder-target="status" role="status"></p>
+                {% if questions %}
+                    <h3 class="h6 mt-4">Waiting for the hosts</h3>
+                    <ul class="questions mb-0">
+                        {% for question in questions %}
+                            <li><strong>{{ question.name ?? 'A listener' }}</strong>: {{ question.text }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </twig:Card:Body>
+        </twig:Card>
+
         {% for item in episodes %}
             {% set episode = item.episode %}
-            <twig:Card class="mb-4 shadow-sm">
+            <twig:Card class="episode mb-4 shadow-sm">
                 <twig:Card:Body>
                     <twig:Card:Title tag="h2" class="h4">{{ episode.title }}</twig:Card:Title>
                     <twig:Card:Subtitle class="mb-3 text-body-secondary">

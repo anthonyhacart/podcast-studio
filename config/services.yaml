@@ -8,6 +8,7 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     app.episodes_dir: '%kernel.project_dir%/var/episodes'
+    app.questions_dir: '%kernel.project_dir%/var/questions'
     app.show:
         title: 'Podcast Studio'
         description: 'Two AI hosts, Paul and Jane, on whatever you ask them about. Every episode is drafted from the sources you bring, reviewed with you in your MCP client, then voiced.'
@@ -49,3 +50,4 @@ services:
 when@test:
     parameters:
         app.episodes_dir: '%kernel.cache_dir%/episodes'
+        app.questions_dir: '%kernel.cache_dir%/questions'

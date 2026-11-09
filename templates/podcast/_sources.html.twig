@@ -1,4 +1,12 @@
 <p>{{ brief.topic }}</p>
+{% if brief.questions %}
+    <p>Listener questions:</p>
+    <ul>
+        {% for question in brief.questions %}
+            <li>{{ question.name ?? 'A listener' }}: {{ question.text }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
 <p>Sources:</p>
 <ul>
     {% for source in brief.sources %}

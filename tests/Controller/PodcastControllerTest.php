@@ -7,6 +7,7 @@ namespace App\Tests\Controller;
 use App\Episode\EpisodeRepository;
 use App\Episode\Published;
 use App\Episode\Transcript;
+use App\Mailbox\Mailbox;
 use App\Tests\Episode\Fixtures;
 use DateTimeImmutable;
 use SimpleXMLElement;
@@ -23,7 +24,7 @@ final class PodcastControllerTest extends WebTestCase
     protected function setUp(): void
     {
         $this->client = self::createClient();
-        (new Filesystem())->remove(self::getContainer()->getParameter('app.episodes_dir'));
+        (new Filesystem())->remove([self::getContainer()->getParameter('app.episodes_dir'), self::getContainer()->getParameter('app.questions_dir')]);
     }
 
     public function testHomeInvitesToConnectAnMcpClientWhenThereIsNoEpisode(): void
@@ -39,11 +40,20 @@ final class PodcastControllerTest extends WebTestCase
         $this->publish();
         $this->client->request('GET', '/');
 
-        self::assertSelectorTextContains('.card-title', 'Worlds, the knockouts');
-        self::assertSelectorTextContains('.card-subtitle', '4 November 2026');
-        self::assertSelectorTextContains('.card-subtitle .badge', '2:05');
+        self::assertSelectorTextContains('.episode .card-title', 'Worlds, the knockouts');
+        self::assertSelectorTextContains('.episode .card-subtitle', '4 November 2026');
+        self::assertSelectorTextContains('.episode .card-subtitle .badge', '2:05');
         self::assertSelectorTextContains('#transcript-'.self::ID.'-collapse', 'Paul');
         self::assertSelectorExists('audio[src="/episodes/'.self::ID.'.mp3"]');
+    }
+
+    public function testHomeInvitesListenersToAskAndShowsTheWaitingQuestions(): void
+    {
+        self::getContainer()->get(Mailbox::class)->post('Who wins the final?', 'Marie');
+        $this->client->request('GET', '/');
+
+        self::assertSelectorExists('[data-controller="recorder"][data-recorder-url-value="/questions"]');
+        self::assertSelectorTextContains('.questions li', 'Marie: Who wins the final?');
     }
 
     public function testFeedDescribesEachEpisodeForPodcastApps(): void

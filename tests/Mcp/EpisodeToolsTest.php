@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Mcp;
 
+use App\Mailbox\Mailbox;
 use App\Mcp\EpisodeTools;
+use Mcp\Exception\ToolCallException;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -13,6 +16,7 @@ use Symfony\Component\Filesystem\Filesystem;
  * draft, publish, then find the episode in the show's memory. Without the cassette,
  * it records one (`make cassette`).
  */
+#[Group('cassette')]
 final class EpisodeToolsTest extends KernelTestCase
 {
     private const BRIEF = __DIR__.'/../../fixtures/briefs/worlds-2026.json';
@@ -21,7 +25,7 @@ final class EpisodeToolsTest extends KernelTestCase
     {
         $_SERVER['CASSETTE'] = 'fixtures/cassettes/worlds-2026.json';
         self::bootKernel();
-        (new Filesystem())->remove(self::getContainer()->getParameter('app.episodes_dir'));
+        (new Filesystem())->remove([self::getContainer()->getParameter('app.episodes_dir'), self::getContainer()->getParameter('app.questions_dir')]);
     }
 
     protected function tearDown(): void
@@ -57,5 +61,20 @@ final class EpisodeToolsTest extends KernelTestCase
 
         self::assertCount(5, $memories);
         self::assertStringStartsWith("On 4 November 2026, in \"{$draft['title']}\", ", $memories[0]);
+    }
+
+    public function testListsTheListenerQuestionsWaitingForAnEpisode(): void
+    {
+        $question = self::getContainer()->get(Mailbox::class)->post('Who wins the final?', 'Marie');
+
+        self::assertSame([['id' => $question->id, 'from' => 'Marie', 'question' => 'Who wins the final?', 'asked' => '4 November 2026']], self::getContainer()->get(EpisodeTools::class)->questions());
+    }
+
+    public function testRefusesToDraftWithAQuestionNoLongerWaiting(): void
+    {
+        $this->expectException(ToolCallException::class);
+        $this->expectExceptionMessage('No listener question "01a1bdf1-396d-7f14-bb1f-e2125edaad26" is waiting.');
+
+        self::getContainer()->get(EpisodeTools::class)->draft('Worlds', [['title' => 'Format', 'notes' => 'Final on 14 November.']], questions: ['01a1bdf1-396d-7f14-bb1f-e2125edaad26']);
     }
 }
