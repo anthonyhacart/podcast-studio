@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http;
+namespace App\Replay;
 
 use Symfony\AI\Platform\Test\Replay\CassetteHttpClient;
 use Symfony\AI\Platform\Test\Replay\HttpCassette;

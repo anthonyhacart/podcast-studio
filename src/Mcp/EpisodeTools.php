@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Mcp;
 
+use App\Archive\PastEpisodes;
 use App\Episode\Brief;
 use App\Episode\InvalidScriptException;
 use App\Episode\Script;
@@ -25,6 +26,7 @@ final readonly class EpisodeTools
     public function __construct(
         private Studio $studio,
         private Show $show,
+        private PastEpisodes $pastEpisodes,
     ) {
     }
 
@@ -76,7 +78,7 @@ final readonly class EpisodeTools
     /**
      * @param string $id the episode id, once the user approved the script
      *
-     * @return array<string, mixed>
+     * @return array{id: string, title: string, duration: string, status: 'published', rephrased?: string}
      */
     #[McpTool(name: 'publish_episode', description: 'Record the approved script with the hosts\' voices and publish the episode. Only call it once the user approved the script.')]
     public function publish(string $id): array
@@ -89,6 +91,17 @@ final readonly class EpisodeTools
             'duration' => $episode->duration(),
             'status' => 'published',
         ] + ($episode->rephrased ? ['rephrased' => $episode->rephrased.'. Tell the user.'] : []);
+    }
+
+    /**
+     * @param string $query a topic, a name or a claim
+     *
+     * @return list<string>
+     */
+    #[McpTool(name: 'search_episodes', description: 'Search what the hosts said in the published episodes, to know whether a topic was already covered before drafting a new episode.')]
+    public function search(string $query): array
+    {
+        return ($this->pastEpisodes)($query);
     }
 
     /**

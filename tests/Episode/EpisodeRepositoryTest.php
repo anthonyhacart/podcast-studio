@@ -8,12 +8,7 @@ use App\Episode\EpisodeRepository;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Clock\MockClock;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
 final class EpisodeRepositoryTest extends TestCase
 {
@@ -23,8 +18,7 @@ final class EpisodeRepositoryTest extends TestCase
     protected function setUp(): void
     {
         $this->dir = sys_get_temp_dir().'/episodes-'.bin2hex(random_bytes(4));
-        $serializer = new Serializer([new ArrayDenormalizer(), new ObjectNormalizer()], [new JsonEncoder()]);
-        $this->episodes = new EpisodeRepository(new Filesystem(), $serializer, new MockClock('2026-11-04 10:00:00'), $this->dir);
+        $this->episodes = Fixtures::episodes($this->dir);
     }
 
     protected function tearDown(): void

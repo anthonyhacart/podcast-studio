@@ -9,7 +9,9 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
- * The whole pipeline, as an MCP client drives it, against recorded Mistral responses.
+ * The whole pipeline, as an MCP client drives it, against recorded Mistral responses:
+ * draft, publish, then find the episode in the show's memory. Without the cassette,
+ * it records one (`make cassette`).
  */
 final class EpisodeToolsTest extends KernelTestCase
 {
@@ -28,7 +30,7 @@ final class EpisodeToolsTest extends KernelTestCase
         parent::tearDown();
     }
 
-    public function testDraftsThenPublishesAnEpisode(): void
+    public function testDraftsPublishesThenRemembersAnEpisode(): void
     {
         $tools = self::getContainer()->get(EpisodeTools::class);
         /** @var array{topic: string, sources: list<array{title: string, notes: string, url?: string}>, minutes: int, tone: string} $brief */
@@ -37,7 +39,7 @@ final class EpisodeToolsTest extends KernelTestCase
         $draft = $tools->draft($brief['topic'], $brief['sources'], $brief['minutes'], $brief['tone']);
 
         self::assertIsString($draft['id']);
-        self::assertSame('Knockout Stage Kicks Off at Worlds 2026', $draft['title']);
+        self::assertIsString($draft['title']);
         self::assertIsString($draft['script']);
         self::assertStringStartsWith('Paul (', $draft['script']);
         self::assertIsString($draft['next']);
@@ -45,9 +47,15 @@ final class EpisodeToolsTest extends KernelTestCase
 
         $published = $tools->publish($draft['id']);
 
-        self::assertSame(['id' => $draft['id'], 'title' => $draft['title'], 'duration' => '1:34', 'status' => 'published'], $published);
+        self::assertSame($draft['id'], $published['id']);
+        self::assertMatchesRegularExpression('/^\d+:\d{2}$/', $published['duration']);
         $dir = self::getContainer()->getParameter('app.episodes_dir');
         self::assertFileExists("{$dir}/{$draft['id']}/episode.mp3");
         self::assertStringStartsWith('WEBVTT', (string) file_get_contents("{$dir}/{$draft['id']}/transcript.vtt"));
+
+        $memories = $tools->search('who is favourite to win the title');
+
+        self::assertCount(5, $memories);
+        self::assertStringStartsWith("On 4 November 2026, in \"{$draft['title']}\", ", $memories[0]);
     }
 }

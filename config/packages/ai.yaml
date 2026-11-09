@@ -3,8 +3,7 @@ ai:
         mistral:
             api_key: '%env(MISTRAL_API_KEY)%'
             # records/replays API responses when CASSETTE is set (make demo)
-            http_client: App\Http\ReplayableHttpClient
-
+            http_client: App\Replay\ReplayableHttpClient
     agent:
         # Writes the episode script from a brief; ScriptWriter checks it and asks again once if needed.
         writer:
@@ -12,3 +11,26 @@ ai:
             model: '%env(WRITER_MODEL)%'
             prompt:
                 file: '%kernel.project_dir%/config/prompts/writer.md'
+            tools:
+                - App\Archive\PastEpisodes
+
+    # The show's memory: every line of the published episodes, searchable by meaning.
+    # The store is "app.archive" (src/Replay/ReplayableStore.php): Postgres, empty in memory for replays.
+    vectorizer:
+        archive:
+            platform: 'ai.platform.mistral'
+            model: '%env(EMBEDDING_MODEL)%'
+    store:
+        postgres:
+            archive:
+                dbal_connection: 'doctrine.dbal.default_connection'
+                table_name: 'archive'
+                dimensions: 1024
+                metric: cosine
+    indexer:
+        # "ai:store:index archive" indexes every published episode again
+        archive:
+            loader: App\Archive\EpisodeLoader
+            vectorizer: 'ai.vectorizer.archive'
+            store: 'app.archive'
+

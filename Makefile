@@ -20,13 +20,18 @@ down: ## Stop the stack
 vendor: ## Install Composer dependencies
 	$(PHP) composer install --no-interaction --prefer-dist
 
-db: ## Create the database and run migrations
+db: ## Create the database and the show's memory
 	$(CONSOLE) doctrine:database:create --if-not-exists
 	$(CONSOLE) doctrine:migrations:migrate --no-interaction --allow-no-migration
+	$(CONSOLE) ai:store:setup archive --no-interaction
 
 demo: ## Make an episode from recorded API responses (no API key needed)
 	$(DC) exec -e CASSETTE=fixtures/cassettes/worlds-2026.json php php bin/console app:episode fixtures/briefs/worlds-2026.json
 	@printf "\n✓ Listen → http://localhost:%s\n" "$$(grep -E '^HTTP_PORT=' .env | cut -d= -f2)"
+
+cassette: ## Record the demo cassette again, live (needs MISTRAL_API_KEY in .env.local)
+	rm -f fixtures/cassettes/worlds-2026.json
+	$(DC) exec php sh -c 'MISTRAL_API_KEY="$$(grep ^MISTRAL_API_KEY= .env.local | cut -d= -f2- | tr -d \")" vendor/bin/phpunit tests/Mcp'
 
 ## —— Dev ————————————————————————————————————————————————————
 sh: ## Shell in the PHP container
@@ -61,4 +66,4 @@ cs: ## Check coding standards
 cs-fix: ## Fix coding standards
 	$(PHP) vendor/bin/php-cs-fixer fix
 
-.PHONY: help install up down vendor db demo sh logs console ollama-pull qa test e2e stan cs cs-fix
+.PHONY: help install up down vendor db demo cassette sh logs console ollama-pull qa test e2e stan cs cs-fix

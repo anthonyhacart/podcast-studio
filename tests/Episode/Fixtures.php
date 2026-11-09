@@ -5,10 +5,19 @@ declare(strict_types=1);
 namespace App\Tests\Episode;
 
 use App\Episode\Brief;
+use App\Episode\EpisodeRepository;
 use App\Episode\Line;
 use App\Episode\Script;
 use App\Episode\Source;
 use App\Show\Show;
+use Symfony\Component\Clock\MockClock;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\PropertyInfo\Extractor\PhpStanExtractor;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 final class Fixtures
 {
@@ -26,6 +35,16 @@ final class Fixtures
                 'jane' => ['name' => 'Jane', 'persona' => 'The analyst.', 'voices' => ['neutral' => 'gb_jane_neutral', 'sarcasm' => 'gb_jane_sarcasm']],
             ],
         ]);
+    }
+
+    /**
+     * A repository in $dir, its clock on 4 November 2026 at 10:00.
+     */
+    public static function episodes(string $dir): EpisodeRepository
+    {
+        $serializer = new Serializer([new ArrayDenormalizer(), new DateTimeNormalizer(), new ObjectNormalizer(propertyTypeExtractor: new PhpStanExtractor())], [new JsonEncoder()]);
+
+        return new EpisodeRepository(new Filesystem(), $serializer, new MockClock('2026-11-04 10:00:00'), $dir);
     }
 
     public static function brief(int $minutes = 1): Brief

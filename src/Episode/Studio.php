@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Episode;
 
+use Symfony\AI\Store\IndexerInterface;
 use Symfony\Component\Clock\ClockInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 
 /**
- * The editorial workflow: draft a script from a brief, revise it on request, publish it as audio.
+ * The editorial workflow: draft a script from a brief, revise it on request, publish it
+ * as audio, and add it to the show's memory.
  */
 final readonly class Studio
 {
@@ -18,6 +21,7 @@ final readonly class Studio
         private Mp3Joiner $joiner,
         private Transcript $transcript,
         private ClockInterface $clock,
+        #[Target('archive')] private IndexerInterface $archive,
     ) {
     }
 
@@ -66,6 +70,7 @@ final readonly class Studio
         [$mp3, $timings] = $this->joiner->join($clips);
         $episode = new Published($id, $script->title, $timings[array_key_last($timings)][1] ?? 0.0, $this->clock->now(), $rephrased);
         $this->episodes->savePublished($id, $episode, $mp3, $this->transcript->vtt($script, $timings));
+        $this->archive->index($id);
 
         return $episode;
     }

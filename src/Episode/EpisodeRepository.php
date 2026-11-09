@@ -58,6 +58,11 @@ final readonly class EpisodeRepository
         $this->write($id, 'episode.json', $episode);
     }
 
+    public function episode(string $id): Published
+    {
+        return $this->read($id, 'episode.json', Published::class);
+    }
+
     /**
      * @return list<Published> newest first
      */
@@ -65,7 +70,7 @@ final readonly class EpisodeRepository
     {
         $episodes = [];
         foreach (glob("{$this->dir}/*/episode.json") ?: [] as $file) {
-            $episodes[] = $this->read(basename(\dirname($file)), 'episode.json', Published::class);
+            $episodes[] = $this->episode(basename(\dirname($file)));
         }
         usort($episodes, static fn (Published $a, Published $b) => $b->publishedAt <=> $a->publishedAt);
 
