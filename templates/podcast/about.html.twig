@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}How it is made · {{ show.title }}{% endblock %}
+
+{% block body %}
+    <main class="container py-5" style="max-width: 48rem">
+        <p><a href="{{ path('app_home') }}">← {{ show.title }}</a></p>
+        <h1 class="display-6 fw-bold mb-4">How it is made</h1>
+
+        <p class="lead">Two AI hosts, Paul and Jane, make each episode with an editor: you, through your AI assistant.</p>
+
+        <ol class="mb-5">
+            <li class="mb-2"><strong>You ask your assistant for an episode.</strong> It searches the sources itself, and checks the questions listeners recorded on this page.</li>
+            <li class="mb-2"><strong>A writer agent drafts the script</strong> from those sources only, citing them line by line, with chapters and a summary. It looks up what the hosts said in past episodes, so they refer back instead of repeating themselves.</li>
+            <li class="mb-2"><strong>You review it in the conversation.</strong> Your assistant compares each line with its sources; you ask for changes until you approve.</li>
+            <li class="mb-2"><strong>The hosts' voices record it</strong>, one voice per host and emotion, and the episode lands in the podcast feed, with its transcript and chapters.</li>
+        </ol>
+
+        <h2 class="h4">Made with</h2>
+        <ul class="mb-5">
+            <li><a href="https://github.com/symfony/ai">Symfony AI</a>: the writer agent and its tools, the structured script, the show's memory (vector store), and the MCP server your assistant talks to.</li>
+            <li><a href="https://mistral.ai">Mistral</a>, for everything the hosts do: writing (Mistral Medium), speaking and listening (Voxtral), remembering (Mistral Embed).</li>
+            <li>Symfony 8, Symfony UX, FrankenPHP and PostgreSQL with pgvector.</li>
+        </ul>
+
+        <h2 class="h4">Given back</h2>
+        <p>Building this show led to two contributions to Symfony AI: <a href="https://github.com/symfony/ai/pull/2873">Voxtral text to speech</a> in the Mistral bridge, and <a href="https://github.com/symfony/ai/pull/2894">a fix to the Postgres store's hybrid search</a>.</p>
+
+        <p class="text-body-secondary small">Built for the <a href="https://symfony.com/hackathon">Symfony AI &amp; MCP Hackathon</a>, November 2026.</p>
+    </main>
+{% endblock %}

@@ -6,7 +6,7 @@
     <main class="container py-5" style="max-width: 48rem">
         <header class="mb-5">
             <h1 class="display-5 fw-bold">{{ show.title }}</h1>
-            <p class="lead text-body-secondary">{{ show.description }}</p>
+            <p class="lead text-body-secondary">{{ show.description }} <a href="{{ path('app_about') }}">How it is made</a></p>
             <div class="input-group" data-controller="clipboard" data-clipboard-source-value="{{ url('app_feed') }}">
                 <span class="input-group-text">Podcast feed</span>
                 <input class="form-control" value="{{ url('app_feed') }}" readonly aria-label="Podcast feed URL">

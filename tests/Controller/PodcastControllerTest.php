@@ -59,6 +59,16 @@ final class PodcastControllerTest extends WebTestCase
         self::assertSelectorTextContains('.questions li', 'Marie: Who wins the final?');
     }
 
+    public function testAboutTellsHowTheShowIsMade(): void
+    {
+        $this->client->request('GET', '/');
+        $this->client->clickLink('How it is made');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'How it is made');
+        self::assertSelectorExists('a[href="https://github.com/symfony/ai/pull/2894"]');
+    }
+
     public function testFeedDescribesEachEpisodeForPodcastApps(): void
     {
         $this->publish();

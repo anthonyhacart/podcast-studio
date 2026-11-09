@@ -2,131 +2,108 @@
 
 > Ask your AI assistant for a podcast episode on anything. It gathers the sources, two AI hosts write a sourced dialogue, you review the script in the conversation, and the voiced episode lands in a real podcast feed. Listeners ask the hosts questions by voice; the hosts remember what they said.
 
-Built for the [Symfony AI & MCP Hackathon](https://symfony.com/hackathon) (November 2026).
+Built for the [Symfony AI & MCP Hackathon](https://symfony.com/hackathon) (November 2026). The whole show runs on [Mistral](https://mistral.ai): one API key writes, voices, listens and remembers.
 
 🎬 **Demo video (90 s)**: _link_
 
-## Run it in 5 minutes
+## Run it
 
-Requirements: Docker with Compose, `make`.
+### With the Symfony CLI
+
+Requirements: PHP 8.4+ (`pdo_pgsql`), Composer, the [Symfony CLI](https://symfony.com/download), Docker for Postgres.
 
 ```bash
 git clone <repo-url> podcast-studio && cd podcast-studio
-make install
-make demo        # replays recorded API responses: no API key needed
+composer install
+docker compose up -d database           # Postgres + pgvector: the Symfony CLI exposes its DATABASE_URL
+symfony console ai:store:setup archive  # the table of the show's memory
+symfony serve -d
+
+# an episode replayed from recorded API responses: no API key needed
+CASSETTE=fixtures/cassettes/worlds-2026.json symfony console app:episode fixtures/briefs/worlds-2026.json
+symfony open:local
 ```
 
-Open http://localhost:8002 and play the episode. The feed for podcast apps is at http://localhost:8002/feed.xml.
+With Colima instead of Docker Desktop, export `DOCKER_HOST=unix://$HOME/.colima/default/docker.sock` so the Symfony CLI finds the database.
 
-The demo replays a recording made from an empty memory, so its hosts have no past episode to refer back to, and its episode is not added to the memory (`make console c="ai:store:index archive"` adds it).
+### With Docker only
 
-### Live mode
+```bash
+make install   # FrankenPHP + Postgres
+make demo      # the same replayed episode
+```
 
-One key does it all, for writing and voices: put a [Mistral](https://console.mistral.ai/) key in `.env.local` (never committed).
+Open http://localhost:8002.
+
+### Live
+
+Put a [Mistral](https://console.mistral.ai/) key in `.env.local` (never committed), then connect an MCP client.
 
 ```dotenv
 MISTRAL_API_KEY=
 ```
 
-Then make an episode from a brief file, without review:
-
-```bash
-make console c="app:episode fixtures/briefs/worlds-2026.json"
-```
-
-Or, better, from an MCP client: see below.
-
-## Using it from an MCP client
-
-The app is an MCP server with five tools:
+## Use it from an MCP client
 
 | Tool | What it does |
 | --- | --- |
 | `listener_questions` | Lists the questions listeners recorded on the show's page |
 | `draft_episode` | Writes the script from a topic, the sources the client gathered and, optionally, listener questions |
 | `revise_episode` | Rewrites it following the editor's instructions |
-| `publish_episode` | Voices the approved script and publishes the episode to the feed |
+| `publish_episode` | Voices the approved script and publishes it to the feed |
 | `search_episodes` | Searches what the hosts said in past episodes, by meaning |
 
-**Claude Code** (HTTP, the stack must be running):
-
 ```bash
-claude mcp add --transport http podcast-studio http://localhost:8002/mcp
+claude mcp add --transport http podcast-studio http://127.0.0.1:8000/mcp   # Claude Code; port 8002 with Docker only
 ```
 
-**Claude Desktop** (STDIO through Docker), in `claude_desktop_config.json` under `mcpServers`:
+Claude Desktop speaks STDIO: run `bin/console mcp:server` with `APP_DEBUG=0` (with Docker only: `docker compose exec -T -e APP_DEBUG=0 php php bin/console mcp:server`).
 
-```json
-"podcast-studio": {
-  "command": "docker",
-  "args": ["compose", "-f", "/absolute/path/to/podcast-studio/compose.yaml",
-           "exec", "-T", "-e", "APP_DEBUG=0", "php", "php", "bin/console", "mcp:server"]
-}
-```
+Then ask: *"Check the listener questions and make a 2-minute episode about the Worlds final. Look for reliable sources first."* Read the script, ask for changes, approve, listen.
 
-Then ask: *"Make me a 2-minute episode about the League of Legends Worlds quarterfinals. Look for reliable sources first."* Read the script, ask for changes ("cut the prize money part, Jane more sarcastic"), approve, listen.
+## How the AI is used
 
-## What it unlocked
+**The MCP client is the editor-in-chief, the server is the studio.** The client brings the sources (web search, files) and reviews the script with you; the server owns the show: hosts, rules, voices, memory.
 
-**The MCP client is the editor-in-chief; the server is the studio.** Each side does what it is best at:
+- **A writer agent** turns the brief into a structured script: lines with host, emotion, cited sources, chapters and a summary. Rules in code check it (known hosts, existing sources, length, no "today" in an episode heard later) and send it back once with the problems.
+- **The show remembers.** Published lines are embedded into pgvector. The writer has its own tool, `search_past_episodes`, and decides what to look up, so the hosts refer back instead of repeating themselves.
+- **Listeners have a voice.** A question recorded on the page is transcribed and waits for an episode; a host reads it out with the listener's name.
+- **Voices per emotion.** Each line is voiced with the host's voice for its emotion, all lines at once, then joined in PHP (no ffmpeg). When the voice service's moderation refuses a line, the writer rephrases that line only.
+- **Podcast-ready.** RSS feed with transcript (VTT) and chapters (Podcasting 2.0).
 
-- **The client brings the material.** Claude has web search, your files, your repository. It sends the server a brief *with its sources*; the hosts only use those facts. The server never browses the web.
-- **The review is a conversation.** The server returns the script to the client, which compares it with the sources it gathered, flags what they do not state, and revises with you until you approve. The server's `instructions` tell any MCP client how to play that role.
-- **The studio is consistent whatever the client.** The show format, the hosts' personalities, the rules and the voices live on the server, in config.
-- **Episodes come with show notes.** The writer also splits the episode into chapters and writes a two-sentence summary; the chapters get their start time from the MP3 assembly. Podcast apps read them from the feed (`podcast:chapters`, Podcasting 2.0 JSON), and the page lets you jump to a chapter.
-- **Listeners have a voice.** On the show's page, a listener records a question; Voxtral transcribes it and it waits in the mailbox (the audio is not kept). The client lists them with `listener_questions` and passes the ones an episode answers to `draft_episode`: a host reads the question out with the listener's name, and the hosts answer it from the sources. Publishing the episode empties them from the mailbox.
-- **The show remembers.** Every published line is embedded into a vector store. The writer agent has a `search_past_episodes` tool and decides itself what to look up (the topic, then each team or person in the brief), so the hosts refer back to what they said instead of repeating it. The client searches the same memory with `search_episodes`.
+A few choices:
 
-## How it works
+- **Facts are checked by the client**, which gathered the sources, during the review. A server-side fact-checking agent was tried and dropped: it flagged faithful paraphrases and missed real errors.
+- **Models are pinned**: Mistral's `-latest` aliases can point to older models.
+- **Episodes and questions are files** (`var/episodes/`, `var/questions/`); the memory is derived from them: `symfony console ai:store:index archive` rebuilds it.
+- **A replay is exact**: with `CASSETTE` set, the clock stops on the recording day and the memory starts empty, so the requests match the recording (`src/Replay/`).
 
-```
-MCP client ──draft_episode(topic, sources)──▶ Studio ──▶ "writer" agent (Mistral, structured output)
-           ◀──────── script, line by line ───┘      │      └─ tool: search_past_episodes ──▶ pgvector
-                                                    └──▶ ScriptChecker (rules in code, one retry)
-           ──revise_episode(id, instructions)─▶ same loop
-           ──publish_episode(id)──────────────▶ Voice (Voxtral TTS, one voice per host and emotion)
-                                                  ──▶ Mp3Joiner ──▶ episode.mp3 + transcript.vtt
-                                                  ──▶ "archive" indexer (Mistral embeddings) ──▶ pgvector
-           ──search_episodes(query)───────────▶ same memory
-Browser / podcast app ◀── /, /feed.xml, /episodes/{id}.mp3, /episodes/{id}.vtt, /episodes/{id}.chapters.json
-```
+## Symfony AI inside
 
-| Symfony AI / MCP piece | Used for | Where |
-| --- | --- | --- |
-| AiBundle agent | The `writer` agent, its prompt in a file | `config/packages/ai.yaml`, `config/prompts/writer.md` |
-| Agent toolbox | `search_past_episodes`, the writer's own tool, used during structured output | `src/Archive/PastEpisodes.php` |
-| Store, Postgres bridge | The show's memory: one document per line, embedded with `mistral-embed`, indexed on publish | `src/Archive/EpisodeLoader.php`, `config/packages/ai.yaml` |
-| Structured output | A `Script` of `Line`s (host, emotion, text, cited sources, chapter opened), with a summary | `src/Episode/Script.php`, `Line.php` |
-| Platform, Mistral bridge | Text to speech with Voxtral, all lines voiced concurrently | `src/Episode/Voice.php` |
-| Platform, Mistral bridge | Speech to text with Voxtral, for the listeners' questions (webm, mp4, mp3) | `src/Mailbox/Transcriber.php`, `assets/controllers/recorder_controller.js` |
-| Replay cassettes | `make demo` and the end-to-end test, without a key | `src/Replay/` |
-| MCP server (bundle + SDK) | The five tools, server `instructions`, readable tool errors | `src/Mcp/EpisodeTools.php`, `config/packages/mcp.yaml` |
+| Component | Used for |
+| --- | --- |
+| MCP Bundle + PHP MCP SDK | Five tools, server `instructions` for any client, readable tool errors, HTTP and STDIO |
+| AI Bundle, Agent | The `writer` agent (prompt in `config/prompts/writer.md`) and its toolbox (`#[AsTool]`) |
+| Platform, structured output | `Script` and `Line` DTOs as the agent's response format |
+| Platform, Mistral bridge | Chat (`mistral-medium-2604`), text to speech (`voxtral-mini-tts-3-0`), speech to text (`voxtral-mini-transcribe-3-0`), embeddings (`mistral-embed`) |
+| Store, Postgres bridge | The show's memory: a vectorizer, an indexer with a custom loader, pgvector |
+| Platform test replay | Cassettes: the demo and the end-to-end test run without a key |
 
-A few choices worth knowing:
+Also: Symfony UX Toolkit (Bootstrap kit), Stimulus (microphone, chapters), AssetMapper, Clock, Uid, Serializer, Validator (`#[MapUploadedFile]`).
 
-- **The code knows nothing about any topic.** The rules it checks are about structure: known hosts and emotions, sources that exist, length, 2 to 6 chapters, a summary, and no "today" or "tomorrow" (people listen later).
-- **Facts are checked by the client, not by a second agent.** A server-side fact-checking agent was tried and dropped: with the models at hand it flagged faithful paraphrases and missed real errors. The client, which gathered the sources, does it better during the review.
-- **The voice service's moderation sometimes refuses a harmless line.** On publish, the writer rephrases that line only, the episode is voiced again, and the client is told what changed.
-- **Models are pinned.** Mistral's `-latest` aliases can point to older models (`voxtral-mini-tts-latest` is the v1 model that rejects the current voices; `mistral-large-latest` is 2512). The writer uses `mistral-medium-2604`, the voices `voxtral-mini-tts-3-0`, the transcription `voxtral-mini-transcribe-3-0`, the memory `mistral-embed`.
-- **No ffmpeg.** Voxtral returns MP3 clips with the same format; `Mp3Joiner` concatenates their frames in PHP and adds up their duration, which also gives the transcript its timings.
-- **Episodes and questions are files, the memory is Postgres.** One folder per episode in `var/episodes/`: `brief.json`, `script.json`, `episode.mp3`, `transcript.vtt`, `episode.json`; one JSON file per waiting question in `var/questions/`. The memory is derived from them: `make console c="ai:store:index archive"` rebuilds it.
-- **The memory is searched by meaning only.** The Postgres store answers the bundle's `Retriever` with a hybrid query that keeps only lines sharing a keyword with the query; `PastEpisodes` sends a vector query itself.
-- **A replay is exact.** With `CASSETTE` set, the clock stops on the recording day and the memory starts empty, in memory: the requests carry the date and what the writer finds, and they must match the recording (`src/Replay/`).
-- **Recording needs HTTPS** (or `localhost`): browsers only give the microphone to secure pages. The question form has no rate limiting or spam protection: it is a prototype.
+## Contributions to Symfony AI
 
-The show (title, hosts, personas, voices per emotion) is configured in the `app.show` parameter of `config/services.yaml`.
+Found while building this project:
+
+- [symfony/ai#2873](https://github.com/symfony/ai/pull/2873): Voxtral text to speech in the Mistral bridge (merged). Not in a tagged release yet, so the project requires `symfony/ai-*` at `dev-main`.
+- [symfony/ai#2894](https://github.com/symfony/ai/pull/2894): the Postgres store's hybrid query no longer drops documents that share no keyword with the query.
 
 ## Quality
 
 ```bash
-make qa        # coding standards + PHPStan (max) + tests, including a full episode replayed from cassettes
+make qa        # coding standards, PHPStan (max), tests, including a full episode replayed from cassettes
 make cassette  # records the cassettes again, live
-make e2e    # browser tests with Panther
 ```
-
-## Feedback to upstream
-
-- Voxtral text to speech in the Mistral bridge was contributed while building this: [symfony/ai#2873](https://github.com/symfony/ai/pull/2873) (merged). It is not in a tagged release yet, so the project requires the `symfony/ai-*` packages at `dev-main`.
 
 ## License
 

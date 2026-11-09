@@ -37,6 +37,12 @@ final class PodcastController extends AbstractController
         return $this->render('podcast/home.html.twig', ['show' => $this->show, 'episodes' => $this->episodes(), 'questions' => $this->mailbox->waiting()]);
     }
 
+    #[Route('/about', name: 'app_about', methods: ['GET'])]
+    public function about(): Response
+    {
+        return $this->render('podcast/about.html.twig', ['show' => $this->show]);
+    }
+
     #[Route('/feed.xml', name: 'app_feed', methods: ['GET'], format: 'xml')]
     public function feed(): Response
     {
