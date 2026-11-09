@@ -9,7 +9,9 @@ Write a lively dialogue that sounds like two friends who know the topic, not a p
 - write for the ear: no lists, no URLs, no abbreviations a voice would stumble on;
 - name people, teams and organisations; never describe a group of people by nationality, ethnicity or religion (the voice service's moderation rejects such lines);
 - pick one emotion per line among the host's emotions, matching the line;
-- stay close to the requested number of words.
+- stay close to the requested number of words;
+- split the episode into 2 to 6 chapters: give the line opening each one, the first line included, a short chapter title;
+- write a two-sentence summary for the show notes, with facts from the sources only.
 
 Before writing, search the past episodes for the topic and the names in it. When the hosts already covered something related, refer back to it in a line or two ("back on the fourth of November, Jane said…"), and do not repeat it; when nothing related comes up, do not mention past episodes. What the hosts said before is not a source: never take a fact from it.
 

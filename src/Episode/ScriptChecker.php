@@ -15,6 +15,8 @@ final readonly class ScriptChecker
     private const MIN_LENGTH_RATIO = 0.6;
     private const MAX_LENGTH_RATIO = 1.5;
     private const MAX_LINE_CHARACTERS = 400;
+    private const MIN_CHAPTERS = 2;
+    private const MAX_CHAPTERS = 6;
     // episodes are heard later: relative days would be wrong by then
     private const RELATIVE_DAYS = '/\b(today|tonight|tomorrow|yesterday|this (?:week|weekend|morning|evening)|last (?:night|week)|next week)\b/i';
 
@@ -60,6 +62,17 @@ final readonly class ScriptChecker
             }
             $cited = $cited || [] !== $line->sources;
             $words += str_word_count($line->text);
+        }
+
+        $chapters = \count(array_filter($script->lines, static fn (Line $line) => null !== $line->chapter));
+        if (null === $script->lines[0]->chapter) {
+            $problems[] = 'Line 1 must open a chapter.';
+        }
+        if ($chapters < self::MIN_CHAPTERS || $chapters > self::MAX_CHAPTERS) {
+            $problems[] = \sprintf('The script has %d chapters, make %d to %d.', $chapters, self::MIN_CHAPTERS, self::MAX_CHAPTERS);
+        }
+        if ('' === trim($script->summary)) {
+            $problems[] = 'The summary is empty.';
         }
 
         if (!$cited) {

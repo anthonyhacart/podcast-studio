@@ -20,6 +20,8 @@ final readonly class Line
         public string $text,
         #[Schema(description: 'Numbers of the sources backing the facts in this line; empty only for banter with no fact')]
         public array $sources,
+        #[Schema(description: 'Short title of the chapter this line opens; null unless it opens one')]
+        public ?string $chapter = null,
     ) {
     }
 }

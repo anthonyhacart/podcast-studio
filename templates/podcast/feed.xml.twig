@@ -18,8 +18,11 @@
                 <enclosure url="{{ url('app_episode_audio', {id: episode.id}) }}" length="{{ item.bytes }}" type="audio/mpeg"/>
                 <itunes:duration>{{ episode.seconds|round }}</itunes:duration>
                 <podcast:transcript url="{{ url('app_episode_transcript', {id: episode.id}) }}" type="text/vtt"/>
-                {# show notes: the sources the hosts used #}
-                <description><![CDATA[{{ include('podcast/_sources.html.twig', {brief: item.brief})|replace({']]>': ']]&gt;'})|raw }}]]></description>
+                {% if episode.chapters %}
+                    <podcast:chapters url="{{ url('app_episode_chapters', {id: episode.id}) }}" type="application/json+chapters"/>
+                {% endif %}
+                {# show notes: the summary, then the sources the hosts used #}
+                <description><![CDATA[{{ (item.script.summary ? '<p>' ~ item.script.summary|e ~ '</p>' : '')|raw }}{{ include('podcast/_sources.html.twig', {brief: item.brief})|replace({']]>': ']]&gt;'})|raw }}]]></description>
             </item>
         {% endfor %}
     </channel>

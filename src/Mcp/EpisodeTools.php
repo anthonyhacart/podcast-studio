@@ -154,14 +154,18 @@ final readonly class EpisodeTools
     {
         $lines = [];
         foreach ($script->lines as $line) {
+            if (null !== $line->chapter) {
+                $lines[] = "## {$line->chapter}";
+            }
             $lines[] = \sprintf('%s (%s)%s: %s', $this->show->hosts[$line->host]->name ?? $line->host, $line->emotion, [] === $line->sources ? '' : ' [sources '.implode(', ', $line->sources).']', $line->text);
         }
 
         return [
             'id' => $id,
             'title' => $script->title,
+            'summary' => $script->summary,
             'script' => implode("\n", $lines),
-            'next' => 'Before showing the script, compare each line with the sources you provided and point out to the user any claim they do not state (wrong team, count or date). Then call revise_episode with the fixes and the user\'s changes, or publish_episode once the user approves.',
+            'next' => 'Before showing the script, compare each line and the summary with the sources you provided and point out to the user any claim they do not state (wrong team, count or date). Then call revise_episode with the fixes and the user\'s changes, or publish_episode once the user approves.',
         ];
     }
 }

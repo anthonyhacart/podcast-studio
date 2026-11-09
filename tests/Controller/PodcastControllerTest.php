@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
+use App\Episode\Chapter;
 use App\Episode\EpisodeRepository;
 use App\Episode\Published;
 use App\Episode\Transcript;
@@ -45,6 +46,8 @@ final class PodcastControllerTest extends WebTestCase
         self::assertSelectorTextContains('.episode .card-subtitle .badge', '2:05');
         self::assertSelectorTextContains('#transcript-'.self::ID.'-collapse', 'Paul');
         self::assertSelectorExists('audio[src="/episodes/'.self::ID.'.mp3"]');
+        self::assertSelectorTextContains('.episode .summary', 'Paul and Jane on the knockout stage.');
+        self::assertSelectorTextContains('.chapters li:nth-child(2) button[data-player-start-param="62.5"]', '1:03 The favourites');
     }
 
     public function testHomeInvitesListenersToAskAndShowsTheWaitingQuestions(): void
@@ -71,6 +74,8 @@ final class PodcastControllerTest extends WebTestCase
         self::assertSame((string) filesize(Fixtures::PAUSE), (string) $item->enclosure['length']);
         self::assertSame('125', (string) $item->children('itunes', true)->duration);
         self::assertSame('http://localhost/episodes/'.self::ID.'.vtt', (string) $item->children('podcast', true)->transcript->attributes()['url']);
+        self::assertSame('http://localhost/episodes/'.self::ID.'.chapters.json', (string) $item->children('podcast', true)->chapters->attributes()['url']);
+        self::assertStringStartsWith('<p>Paul and Jane on the knockout stage.</p>', (string) $item->description);
         self::assertStringContainsString('<li>Format</li>', (string) $item->description);
     }
 
@@ -93,6 +98,18 @@ final class PodcastControllerTest extends WebTestCase
         self::assertStringStartsWith("WEBVTT\n\n1\n00:00:00.000 --> 00:00:12.000\n<v Paul>", $this->client->getInternalResponse()->getContent());
     }
 
+    public function testServesTheChaptersForPodcastApps(): void
+    {
+        $this->publish();
+        $this->client->request('GET', '/episodes/'.self::ID.'.chapters.json');
+
+        self::assertResponseHeaderSame('Content-Type', 'application/json+chapters');
+        self::assertJsonStringEqualsJsonString(
+            '{"version": "1.2.0", "chapters": [{"startTime": 0, "title": "The format"}, {"startTime": 62.5, "title": "The favourites"}]}',
+            (string) $this->client->getResponse()->getContent(),
+        );
+    }
+
     public function testUnknownEpisodesAreNotFound(): void
     {
         $this->client->request('GET', '/episodes/20261104-100000-ffff.mp3');
@@ -109,7 +126,7 @@ final class PodcastControllerTest extends WebTestCase
         $timings = array_map(static fn (int $i) => [$i * 12.5, $i * 12.5 + 12.0], array_keys($script->lines));
         $episodes->savePublished(
             self::ID,
-            new Published(self::ID, 'Worlds, the knockouts', 125.0, new DateTimeImmutable('2026-11-04 10:00')),
+            new Published(self::ID, 'Worlds, the knockouts', 125.0, new DateTimeImmutable('2026-11-04 10:00'), chapters: Chapter::fromScript($script, $timings)),
             (string) file_get_contents(Fixtures::PAUSE),
             (new Transcript(Fixtures::show()))->vtt($script, $timings),
         );

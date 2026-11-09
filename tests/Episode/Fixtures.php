@@ -56,15 +56,19 @@ final class Fixtures
     }
 
     /**
-     * A script of about $words words, the first line citing source 1.
+     * A script of about $words words in two chapters, the first line citing source 1.
      */
     public static function script(int $words = 150): Script
     {
         $lines = [];
         for ($i = 0; $i < 10; ++$i) {
-            $lines[] = new Line(0 === $i % 2 ? 'paul' : 'jane', 'neutral', trim(str_repeat('word ', intdiv($words, 10))), 0 === $i ? [1] : []);
+            $lines[] = new Line(0 === $i % 2 ? 'paul' : 'jane', 'neutral', trim(str_repeat('word ', intdiv($words, 10))), 0 === $i ? [1] : [], match ($i) {
+                0 => 'The format',
+                5 => 'The favourites',
+                default => null,
+            });
         }
 
-        return new Script('Episode', $lines);
+        return new Script('Episode', $lines, 'Paul and Jane on the knockout stage.');
     }
 }

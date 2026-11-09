@@ -40,13 +40,27 @@
         {% for item in episodes %}
             {% set episode = item.episode %}
             <twig:Card class="episode mb-4 shadow-sm">
-                <twig:Card:Body>
+                <twig:Card:Body data-controller="player">
                     <twig:Card:Title tag="h2" class="h4">{{ episode.title }}</twig:Card:Title>
                     <twig:Card:Subtitle class="mb-3 text-body-secondary">
                         {{ episode.publishedAt|date('j F Y') }}
                         <twig:Badge color="secondary" pill class="ms-2">{{ episode.duration }}</twig:Badge>
                     </twig:Card:Subtitle>
-                    <audio class="w-100 mb-3" controls preload="none" src="{{ path('app_episode_audio', {id: episode.id}) }}"></audio>
+                    {% if item.script.summary %}
+                        <p class="summary">{{ item.script.summary }}</p>
+                    {% endif %}
+                    <audio class="w-100 mb-3" controls preload="none" src="{{ path('app_episode_audio', {id: episode.id}) }}" data-player-target="audio"></audio>
+                    {% if episode.chapters %}
+                        <ol class="chapters list-unstyled mb-3">
+                            {% for chapter in episode.chapters %}
+                                <li>
+                                    <button type="button" class="btn btn-link p-0 text-decoration-none" data-action="player#seek" data-player-start-param="{{ chapter.start }}">
+                                        <span class="font-monospace text-body-secondary me-2">{{ chapter.at }}</span> {{ chapter.title }}
+                                    </button>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    {% endif %}
 
                     <twig:Accordion id="episode-{{ episode.id }}" flush>
                         <twig:Accordion:Item id="transcript-{{ episode.id }}" label="Transcript" headingTag="h3">

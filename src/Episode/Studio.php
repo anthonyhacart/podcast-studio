@@ -70,7 +70,7 @@ final readonly class Studio
         }
 
         [$mp3, $timings] = $this->joiner->join($clips);
-        $episode = new Published($id, $script->title, $timings[array_key_last($timings)][1] ?? 0.0, $this->clock->now(), $rephrased);
+        $episode = new Published($id, $script->title, $timings[array_key_last($timings)][1] ?? 0.0, $this->clock->now(), $rephrased, Chapter::fromScript($script, $timings));
         $this->episodes->savePublished($id, $episode, $mp3, $this->transcript->vtt($script, $timings));
         $this->archive->index($id);
         $this->mailbox->remove($this->episodes->brief($id)->questions);

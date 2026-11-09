@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Mcp;
 
+use App\Episode\EpisodeRepository;
 use App\Mailbox\Mailbox;
 use App\Mcp\EpisodeTools;
 use Mcp\Exception\ToolCallException;
@@ -45,7 +46,9 @@ final class EpisodeToolsTest extends KernelTestCase
         self::assertIsString($draft['id']);
         self::assertIsString($draft['title']);
         self::assertIsString($draft['script']);
-        self::assertStringStartsWith('Paul (', $draft['script']);
+        self::assertStringStartsWith('## ', $draft['script']);
+        self::assertStringContainsString("\nPaul (", $draft['script']);
+        self::assertIsString($draft['summary']);
         self::assertIsString($draft['next']);
         self::assertStringContainsString('publish_episode once the user approves', $draft['next']);
 
@@ -56,6 +59,10 @@ final class EpisodeToolsTest extends KernelTestCase
         $dir = self::getContainer()->getParameter('app.episodes_dir');
         self::assertFileExists("{$dir}/{$draft['id']}/episode.mp3");
         self::assertStringStartsWith('WEBVTT', (string) file_get_contents("{$dir}/{$draft['id']}/transcript.vtt"));
+        $episodes = self::getContainer()->get(EpisodeRepository::class);
+        self::assertNotEmpty($episodes->script($draft['id'])->summary);
+        self::assertGreaterThanOrEqual(2, \count($episodes->episode($draft['id'])->chapters));
+        self::assertSame(0.0, $episodes->episode($draft['id'])->chapters[0]->start);
 
         $memories = $tools->search('who is favourite to win the title');
 

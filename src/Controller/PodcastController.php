@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Episode\Brief;
+use App\Episode\Chapter;
 use App\Episode\EpisodeRepository;
 use App\Episode\Published;
 use App\Episode\Script;
@@ -13,6 +14,7 @@ use App\Show\Show;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -64,6 +66,18 @@ final class PodcastController extends AbstractController
     }
 
     /**
+     * Podcasting 2.0 chapters, for podcast apps.
+     */
+    #[Route('/episodes/{id}.chapters.json', name: 'app_episode_chapters', requirements: ['id' => self::ID], methods: ['GET'], format: 'json')]
+    public function chapters(string $id): JsonResponse
+    {
+        $episode = $this->published(fn () => $this->episodes->episode($id));
+        $chapters = array_map(static fn (Chapter $c) => ['startTime' => round($c->start, 3), 'title' => $c->title], $episode->chapters);
+
+        return new JsonResponse(['version' => '1.2.0', 'chapters' => $chapters], headers: ['Content-Type' => 'application/json+chapters']);
+    }
+
+    /**
      * @return list<array{episode: Published, script: Script, brief: Brief, bytes: int}>
      */
     private function episodes(): array
@@ -82,12 +96,18 @@ final class PodcastController extends AbstractController
     }
 
     /**
-     * @param callable(): string $path
+     * Turns an unknown or unpublished episode into a 404.
+     *
+     * @template T
+     *
+     * @param callable(): T $find
+     *
+     * @return T
      */
-    private function published(callable $path): string
+    private function published(callable $find): mixed
     {
         try {
-            return $path();
+            return $find();
         } catch (InvalidArgumentException $e) {
             throw new NotFoundHttpException($e->getMessage(), $e);
         }

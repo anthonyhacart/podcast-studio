@@ -73,6 +73,7 @@ Then ask: *"Make me a 2-minute episode about the League of Legends Worlds quarte
 - **The client brings the material.** Claude has web search, your files, your repository. It sends the server a brief *with its sources*; the hosts only use those facts. The server never browses the web.
 - **The review is a conversation.** The server returns the script to the client, which compares it with the sources it gathered, flags what they do not state, and revises with you until you approve. The server's `instructions` tell any MCP client how to play that role.
 - **The studio is consistent whatever the client.** The show format, the hosts' personalities, the rules and the voices live on the server, in config.
+- **Episodes come with show notes.** The writer also splits the episode into chapters and writes a two-sentence summary; the chapters get their start time from the MP3 assembly. Podcast apps read them from the feed (`podcast:chapters`, Podcasting 2.0 JSON), and the page lets you jump to a chapter.
 - **Listeners have a voice.** On the show's page, a listener records a question; Voxtral transcribes it and it waits in the mailbox (the audio is not kept). The client lists them with `listener_questions` and passes the ones an episode answers to `draft_episode`: a host reads the question out with the listener's name, and the hosts answer it from the sources. Publishing the episode empties them from the mailbox.
 - **The show remembers.** Every published line is embedded into a vector store. The writer agent has a `search_past_episodes` tool and decides itself what to look up (the topic, then each team or person in the brief), so the hosts refer back to what they said instead of repeating it. The client searches the same memory with `search_episodes`.
 
@@ -87,7 +88,7 @@ MCP client ──draft_episode(topic, sources)──▶ Studio ──▶ "writer
                                                   ──▶ Mp3Joiner ──▶ episode.mp3 + transcript.vtt
                                                   ──▶ "archive" indexer (Mistral embeddings) ──▶ pgvector
            ──search_episodes(query)───────────▶ same memory
-Browser / podcast app ◀── /, /feed.xml, /episodes/{id}.mp3, /episodes/{id}.vtt
+Browser / podcast app ◀── /, /feed.xml, /episodes/{id}.mp3, /episodes/{id}.vtt, /episodes/{id}.chapters.json
 ```
 
 | Symfony AI / MCP piece | Used for | Where |
@@ -95,7 +96,7 @@ Browser / podcast app ◀── /, /feed.xml, /episodes/{id}.mp3, /episodes/{id}
 | AiBundle agent | The `writer` agent, its prompt in a file | `config/packages/ai.yaml`, `config/prompts/writer.md` |
 | Agent toolbox | `search_past_episodes`, the writer's own tool, used during structured output | `src/Archive/PastEpisodes.php` |
 | Store, Postgres bridge | The show's memory: one document per line, embedded with `mistral-embed`, indexed on publish | `src/Archive/EpisodeLoader.php`, `config/packages/ai.yaml` |
-| Structured output | A `Script` of `Line`s: host, emotion, text, cited sources | `src/Episode/Script.php`, `Line.php` |
+| Structured output | A `Script` of `Line`s (host, emotion, text, cited sources, chapter opened), with a summary | `src/Episode/Script.php`, `Line.php` |
 | Platform, Mistral bridge | Text to speech with Voxtral, all lines voiced concurrently | `src/Episode/Voice.php` |
 | Platform, Mistral bridge | Speech to text with Voxtral, for the listeners' questions (webm, mp4, mp3) | `src/Mailbox/Transcriber.php`, `assets/controllers/recorder_controller.js` |
 | Replay cassettes | `make demo` and the end-to-end test, without a key | `src/Replay/` |
@@ -103,7 +104,7 @@ Browser / podcast app ◀── /, /feed.xml, /episodes/{id}.mp3, /episodes/{id}
 
 A few choices worth knowing:
 
-- **The code knows nothing about any topic.** The rules it checks are about structure: known hosts and emotions, sources that exist, length, and no "today" or "tomorrow" (people listen later).
+- **The code knows nothing about any topic.** The rules it checks are about structure: known hosts and emotions, sources that exist, length, 2 to 6 chapters, a summary, and no "today" or "tomorrow" (people listen later).
 - **Facts are checked by the client, not by a second agent.** A server-side fact-checking agent was tried and dropped: with the models at hand it flagged faithful paraphrases and missed real errors. The client, which gathered the sources, does it better during the review.
 - **The voice service's moderation sometimes refuses a harmless line.** On publish, the writer rephrases that line only, the episode is voiced again, and the client is told what changed.
 - **Models are pinned.** Mistral's `-latest` aliases can point to older models (`voxtral-mini-tts-latest` is the v1 model that rejects the current voices; `mistral-large-latest` is 2512). The writer uses `mistral-medium-2604`, the voices `voxtral-mini-tts-3-0`, the transcription `voxtral-mini-transcribe-3-0`, the memory `mistral-embed`.
