@@ -79,6 +79,7 @@ final class PodcastControllerTest extends WebTestCase
         $item = $rss->channel->item[0];
         self::assertNotNull($item);
         self::assertSame('Podcast Studio', (string) $rss->channel->title);
+        self::assertMatchesRegularExpression('#^http://localhost/assets/images/cover-\w+\.jpg$#', (string) $rss->channel->children('itunes', true)->image->attributes()['href']);
         self::assertSame('Worlds, the knockouts', (string) $item->title);
         self::assertSame('http://localhost/episodes/'.self::ID.'.mp3', (string) $item->enclosure['url']);
         self::assertSame((string) filesize(Fixtures::PAUSE), (string) $item->enclosure['length']);

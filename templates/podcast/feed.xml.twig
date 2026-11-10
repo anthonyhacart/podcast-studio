@@ -7,6 +7,7 @@
         <description>{{ show.description }}</description>
         <language>{{ show.language }}</language>
         <itunes:author>{{ show.author }}</itunes:author>
+        <itunes:image href="{{ absolute_url(asset('images/cover.jpg')) }}"/>
         <itunes:explicit>false</itunes:explicit>
         <itunes:category text="News"/>
         {% for item in episodes %}
