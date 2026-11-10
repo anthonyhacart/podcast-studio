@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Mcp;
 
 use App\Archive\PastEpisodes;
+use App\Episode\AlreadyPublishingException;
 use App\Episode\Brief;
 use App\Episode\InvalidScriptException;
 use App\Episode\Script;
@@ -55,6 +56,7 @@ final readonly class EpisodeTools
             'required' => ['title', 'notes'],
         ])]
         array $sources,
+        #[Schema(minimum: 1, maximum: 5)]
         int $minutes = 2,
         ?string $tone = null,
         #[Schema(items: ['type' => 'string'])]
@@ -64,7 +66,7 @@ final readonly class EpisodeTools
             $brief = new Brief(
                 $topic,
                 array_map(static fn (array $s) => new Source($s['title'], $s['notes'], $s['url'] ?? null), $sources),
-                max(1, min(5, $minutes)),
+                $minutes,
                 $tone,
                 array_map($this->mailbox->question(...), $questions),
             );
@@ -142,7 +144,7 @@ final readonly class EpisodeTools
     {
         try {
             return $action();
-        } catch (InvalidArgumentException|InvalidScriptException|UnspeakableLineException $e) {
+        } catch (InvalidArgumentException|InvalidScriptException|UnspeakableLineException|AlreadyPublishingException $e) {
             throw new ToolCallException($e->getMessage(), previous: $e);
         }
     }

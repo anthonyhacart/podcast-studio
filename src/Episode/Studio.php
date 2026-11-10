@@ -8,6 +8,7 @@ use App\Mailbox\Mailbox;
 use Symfony\AI\Store\IndexerInterface;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
+use Symfony\Component\Lock\LockFactory;
 
 /**
  * The editorial workflow: draft a script from a brief, revise it on request, publish it
@@ -24,6 +25,7 @@ final readonly class Studio
         private ClockInterface $clock,
         #[Target('archive')] private IndexerInterface $archive,
         private Mailbox $mailbox,
+        private LockFactory $locks,
     ) {
     }
 
@@ -53,6 +55,20 @@ final readonly class Studio
      * sometimes wrongly), the writer rephrases that line and the episode is voiced again, once.
      */
     public function publish(string $id): Published
+    {
+        $lock = $this->locks->createLock("publish-{$id}");
+        if (!$lock->acquire()) {
+            throw new AlreadyPublishingException($id);
+        }
+
+        try {
+            return $this->voiceAndPublish($id);
+        } finally {
+            $lock->release();
+        }
+    }
+
+    private function voiceAndPublish(string $id): Published
     {
         $script = $this->episodes->script($id);
         $rephrased = null;

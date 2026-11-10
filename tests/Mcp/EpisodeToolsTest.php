@@ -11,6 +11,7 @@ use Mcp\Exception\ToolCallException;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Lock\LockFactory;
 
 /**
  * The whole pipeline, as an MCP client drives it, against recorded Mistral responses:
@@ -83,5 +84,20 @@ final class EpisodeToolsTest extends KernelTestCase
         $this->expectExceptionMessage('No listener question "01a1bdf1-396d-7f14-bb1f-e2125edaad26" is waiting.');
 
         self::getContainer()->get(EpisodeTools::class)->draft('Worlds', [['title' => 'Format', 'notes' => 'Final on 14 November.']], questions: ['01a1bdf1-396d-7f14-bb1f-e2125edaad26']);
+    }
+
+    public function testRefusesToPublishAnEpisodeAlreadyBeingPublished(): void
+    {
+        $lock = self::getContainer()->get(LockFactory::class)->createLock('publish-20261104-100000-abcd');
+        self::assertTrue($lock->acquire());
+
+        try {
+            $this->expectException(ToolCallException::class);
+            $this->expectExceptionMessage('already being published');
+
+            self::getContainer()->get(EpisodeTools::class)->publish('20261104-100000-abcd');
+        } finally {
+            $lock->release();
+        }
     }
 }
