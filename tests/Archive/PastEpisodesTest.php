@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Archive;
 
 use App\Archive\PastEpisodes;
+use App\Replay\ReplayableStore;
 use PHPUnit\Framework\TestCase;
 use Symfony\AI\Platform\Vector\Vector;
 use Symfony\AI\Store\Document\Metadata;
@@ -35,7 +36,8 @@ final class PastEpisodesTest extends TestCase
         $store = new Store();
         $store->add(array_map(fn (int $i) => $this->line([1.0, $i / 10], "Paul: line {$i}."), range(1, PastEpisodes::LIMIT + 2)));
 
-        self::assertCount(PastEpisodes::LIMIT, (new PastEpisodes($this->vectorizer([1.0, 0.0]), $store))('anything'));
+        // through the app's store, as wired: it gives the in-memory store its own name for the limit
+        self::assertCount(PastEpisodes::LIMIT, (new PastEpisodes($this->vectorizer([1.0, 0.0]), new ReplayableStore($store)))('anything'));
     }
 
     public function testFindsNothingInAnEmptyArchive(): void

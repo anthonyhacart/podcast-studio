@@ -45,6 +45,11 @@ final readonly class ReplayableStore implements StoreInterface
 
     public function query(QueryInterface $query, array $options = []): iterable
     {
+        // the stores do not agree on the option name: "limit" for Postgres, "maxItems" in memory
+        if ($this->store instanceof InMemoryStore && isset($options['limit'])) {
+            $options['maxItems'] = $options['limit'];
+        }
+
         return $this->store->query($query, $options);
     }
 

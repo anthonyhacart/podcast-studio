@@ -37,8 +37,7 @@ final readonly class PastEpisodes
     public function __invoke(string $query): array
     {
         $lines = [];
-        // the stores do not agree on the option name: "limit" for Postgres, "maxItems" in memory
-        foreach ($this->store->query(new VectorQuery($this->vectorizer->vectorize($query)), ['limit' => self::LIMIT, 'maxItems' => self::LIMIT]) as $document) {
+        foreach ($this->store->query(new VectorQuery($this->vectorizer->vectorize($query)), ['limit' => self::LIMIT]) as $document) {
             $lines[] = (string) $document->getMetadata()->getText();
         }
 

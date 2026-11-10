@@ -8,6 +8,7 @@ use App\Episode\Brief;
 use App\Episode\Studio;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -38,6 +39,6 @@ final readonly class EpisodeCommand
         $episode = $this->studio->publish($id);
         $io->success(\sprintf('Episode %s published (%s)', $episode->id, $episode->duration()));
 
-        return 0;
+        return Command::SUCCESS;
     }
 }
