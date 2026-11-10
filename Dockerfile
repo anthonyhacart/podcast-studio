@@ -1,4 +1,4 @@
-# Image de dev/démo : FrankenPHP (PHP 8.4 + Caddy + Mercure), outils audio et navigateur pour Panther.
+# Dev and demo image: FrankenPHP (PHP 8.4 + Caddy), with a browser for the Panther tests.
 FROM dunglas/frankenphp:1-php8.4
 
 RUN install-php-extensions \
@@ -9,10 +9,9 @@ RUN install-php-extensions \
         apcu \
         pcntl
 
-# ffmpeg : montage/normalisation audio des POC vocaux.
-# chromium + driver : tests e2e Panther (micro et caméra simulés).
+# chromium + driver: the Panther end-to-end tests (make e2e)
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ffmpeg chromium chromium-driver git unzip \
+    && apt-get install -y --no-install-recommends chromium chromium-driver git unzip \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

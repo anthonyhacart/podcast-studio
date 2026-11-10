@@ -22,7 +22,6 @@ vendor: ## Install Composer dependencies
 
 db: ## Create the database and the show's memory
 	$(CONSOLE) doctrine:database:create --if-not-exists
-	$(CONSOLE) doctrine:migrations:migrate --no-interaction --allow-no-migration
 	$(CONSOLE) ai:store:setup archive --no-interaction
 
 demo: ## Make an episode from recorded API responses (no API key needed)
@@ -43,10 +42,6 @@ logs: ## Follow logs
 console: ## Run a console command: make console c="debug:router"
 	$(CONSOLE) $(c)
 
-ollama-pull: ## Pull a local model: make ollama-pull m=llama3.2
-	$(DC) --profile ollama up -d ollama
-	$(DC) exec ollama ollama pull $(m)
-
 ## —— Quality ————————————————————————————————————————————————
 qa: cs stan test ## Run everything CI runs
 
@@ -66,4 +61,4 @@ cs: ## Check coding standards
 cs-fix: ## Fix coding standards
 	$(PHP) vendor/bin/php-cs-fixer fix
 
-.PHONY: help install up down vendor db demo cassette sh logs console ollama-pull qa test e2e stan cs cs-fix
+.PHONY: help install up down vendor db demo cassette sh logs console qa test e2e stan cs cs-fix

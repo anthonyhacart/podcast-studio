@@ -8,10 +8,6 @@ services:
     environment:
       SERVER_NAME: ":80"
       DATABASE_URL: "postgresql://app:app@database:5432/app?serverVersion=17&charset=utf8"
-      MERCURE_URL: "http://localhost/.well-known/mercure"
-      MERCURE_PUBLIC_URL: "http://localhost:${HTTP_PORT:-8000}/.well-known/mercure"
-      MERCURE_JWT_SECRET: "${MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}"
-      OLLAMA_HOST_URL: "http://ollama:11434"
     depends_on:
       database:
         condition: service_healthy
@@ -32,31 +28,5 @@ services:
       timeout: 5s
       retries: 10
 
-  # docker compose --profile worker up -d  (une fois un transport async configuré)
-  worker:
-    build: .
-    profiles: [worker]
-    command: ["php", "bin/console", "messenger:consume", "async", "-vv", "--time-limit=3600"]
-    restart: unless-stopped
-    volumes:
-      - .:/app
-    environment:
-      DATABASE_URL: "postgresql://app:app@database:5432/app?serverVersion=17&charset=utf8"
-      MERCURE_URL: "http://php/.well-known/mercure"
-      MERCURE_PUBLIC_URL: "http://localhost:${HTTP_PORT:-8000}/.well-known/mercure"
-      MERCURE_JWT_SECRET: "${MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}"
-      OLLAMA_HOST_URL: "http://ollama:11434"
-    depends_on:
-      database:
-        condition: service_healthy
-
-  # docker compose --profile ollama up -d  → modèles locaux, sans clé API
-  ollama:
-    image: ollama/ollama:latest
-    profiles: [ollama]
-    volumes:
-      - ollama_data:/root/.ollama
-
 volumes:
   database_data:
-  ollama_data:

@@ -3,20 +3,10 @@
 	{$CADDY_GLOBAL_OPTIONS}
 }
 
-# HTTP simple sur :80 (mappé sur HTTP_PORT) : pas de certificat à accepter pour un juré.
+# Plain HTTP on :80 (mapped to HTTP_PORT): no certificate to accept.
 {$SERVER_NAME::80} {
 	root /app/public
 	encode zstd br gzip
 
-	route {
-		mercure {
-			transport local
-			publisher_jwt {env.MERCURE_JWT_SECRET}
-			subscriber_jwt {env.MERCURE_JWT_SECRET}
-			anonymous
-			subscriptions
-		}
-
-		php_server
-	}
+	php_server
 }

@@ -267,7 +267,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         formats?: array<string, Param|string|list<scalar|Param|null>>,
  *     },
  *     assets?: bool|array{ // Assets configuration
- *         enabled?: bool|Param, // Default: false
+ *         enabled?: bool|Param, // Default: true
  *         strict_mode?: bool|Param, // Throw an exception if an entry is missing from the manifest.json. // Default: false
  *         version_strategy?: scalar|Param|null, // Default: null
  *         version?: scalar|Param|null, // Default: null
@@ -416,7 +416,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         log_channel?: scalar|Param|null, // The channel of log message. Null to let Symfony decide. // Default: null
  *     }>,
  *     web_link?: bool|array{ // Web links configuration
- *         enabled?: bool|Param, // Default: true
+ *         enabled?: bool|Param, // Default: false
  *     },
  *     lock?: Param|bool|string|array{ // Lock configuration
  *         enabled?: bool|Param, // Default: false
@@ -427,7 +427,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         resources?: Param|string|array<string, scalar|Param|null>,
  *     },
  *     messenger?: bool|array{ // Messenger configuration
- *         enabled?: bool|Param, // Default: true
+ *         enabled?: bool|Param, // Default: false
  *         routing?: array<string, Param|string|list<scalar|Param|null>>,
  *         serializer?: array{
  *             default_serializer?: scalar|Param|null, // Service id to use as the default serializer for the transports. // Default: "messenger.transport.native_php_serializer"
@@ -1745,54 +1745,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         }>,
  *     }>,
  * }
- * @psalm-type MercureConfig = array{
- *     hubs?: array<string, array{ // Default: []
- *         url?: scalar|Param|null, // URL of the hub's publish endpoint. Leave empty to publish through FrankenPHP's built-in Mercure hub. // Default: null
- *         public_url?: scalar|Param|null, // URL of the hub's public endpoint // Default: null
- *         publisher?: array{ // Configuration of the JSON Web Token used to publish to this hub. Use with "subscriber" to sign publisher and subscriber tokens with different keys.
- *             value?: scalar|Param|null, // JSON Web Token to use to publish to this hub.
- *             provider?: scalar|Param|null, // The ID of a service implementing TokenProviderInterface.
- *             factory?: scalar|Param|null, // The ID of a service implementing TokenFactoryInterface, used to create the JSON Web Token.
- *             topics?: list<scalar|Param|null>,
- *             secret?: scalar|Param|null, // The JWT Secret to use.
- *             passphrase?: scalar|Param|null, // The JWT secret passphrase. // Default: ""
- *             algorithm?: scalar|Param|null, // The algorithm to use to sign the JWT. With "secret", one of LcobucciFactory::SIGN_ALGORITHMS ("hmac.sha256", the default). With "jwks_uri", a JWA name from WebTokenFactory::SIGN_ALGORITHMS ("HS256", the default).
- *             jwks_uri?: scalar|Param|null, // URL of a JSON Web Key Set (JWKS) to fetch the signing key from, instead of "secret". Requires "protocol_version: 1.0" and "web-token/jwt-library".
- *             key_id?: scalar|Param|null, // The "kid" of the key to select from "jwks_uri", required when the key set holds more than one matching key.
- *             claims?: array<string, mixed>,
- *         },
- *         subscriber?: array{ // Configuration of the JSON Web Tokens created for subscribers (e.g. the authorization cookie).
- *             factory?: scalar|Param|null, // The ID of a service implementing TokenFactoryInterface, used to create the JSON Web Tokens.
- *             secret?: scalar|Param|null, // The JWT Secret to use.
- *             passphrase?: scalar|Param|null, // The JWT secret passphrase. // Default: ""
- *             algorithm?: scalar|Param|null, // The algorithm to use to sign the JWT. With "secret", one of LcobucciFactory::SIGN_ALGORITHMS ("hmac.sha256", the default). With "jwks_uri", a JWA name from WebTokenFactory::SIGN_ALGORITHMS ("HS256", the default).
- *             jwks_uri?: scalar|Param|null, // URL of a JSON Web Key Set (JWKS) to fetch the signing key from, instead of "secret". Requires "protocol_version: 1.0" and "web-token/jwt-library".
- *             key_id?: scalar|Param|null, // The "kid" of the key to select from "jwks_uri", required when the key set holds more than one matching key.
- *             claims?: array<string, mixed>,
- *         },
- *         jwt?: Param|string|array{ // JSON Web Token configuration.
- *             value?: scalar|Param|null, // JSON Web Token to use to publish to this hub.
- *             provider?: scalar|Param|null, // The ID of a service to call to provide the JSON Web Token.
- *             factory?: scalar|Param|null, // The ID of a service to call to create the JSON Web Token.
- *             publish?: list<scalar|Param|null>,
- *             subscribe?: list<scalar|Param|null>,
- *             secret?: scalar|Param|null, // The JWT Secret to use.
- *             passphrase?: scalar|Param|null, // The JWT secret passphrase. // Default: ""
- *             algorithm?: scalar|Param|null, // The algorithm to use to sign the JWT. With "secret", one of LcobucciFactory::SIGN_ALGORITHMS ("hmac.sha256", the default). With "jwks_uri", a JWA name from WebTokenFactory::SIGN_ALGORITHMS ("HS256", the default).
- *             jwks_uri?: scalar|Param|null, // URL of a JSON Web Key Set (JWKS) to fetch the signing key from, instead of "secret". Requires "protocol_version: 1.0" and "web-token/jwt-library".
- *             key_id?: scalar|Param|null, // The "kid" of the key to select from "jwks_uri", required when the key set holds more than one matching key.
- *             claims?: array<string, mixed>,
- *         },
- *         jwt_provider?: scalar|Param|null, // Deprecated: The child node "jwt_provider" at path "mercure.hubs..jwt_provider" is deprecated, use "jwt.provider" instead. // The ID of a service to call to generate the JSON Web Token.
- *         bus?: scalar|Param|null, // Name of the Messenger bus where the handler for this hub must be registered. Default to the default bus if Messenger is enabled.
- *         http_client?: scalar|Param|null, // The ID of the HTTP client service to publish to this hub with, e.g. a scoped client with a short timeout. Defaults to "http_client".
- *         protocol_version?: value-of<\Symfony\Component\Mercure\ProtocolVersion>|\Symfony\Component\Mercure\ProtocolVersion|Param, // The Mercure protocol version spoken by this hub: "1.0" (default) or "0.x". Affects the default cookie name, the JWT claim shape built by "jwt.secret", and how the mercure() Twig function interprets matcher-typed topics. // Default: "1.0"
- *         cookie_name?: scalar|Param|null, // Name of the subscriber authorization cookie. Defaults to a value computed from "protocol_version" when not set: "__Secure-mercure_access_token" for "1.0" ("mercure_access_token" in debug mode, matching the hub's "playground" mode), "mercureAuthorization" for "0.x". // Default: null
- *     }>,
- *     default_hub?: scalar|Param|null,
- *     default_cookie_lifetime?: int|Param, // Default lifetime of the cookie containing the JWT, in seconds. Defaults to the value of "framework.session.cookie_lifetime". // Default: null
- *     enable_profiler?: bool|Param, // Deprecated: The child node "enable_profiler" at path "mercure.enable_profiler" is deprecated. // Enable Symfony Web Profiler integration.
- * }
  * @psalm-type MonologConfig = array{
  *     use_microseconds?: scalar|Param|null, // Default: true
  *     timezone?: string|Param, // The timezone used for the timestamp of every log record (e.g. "UTC" or "Europe/Paris"). Defaults to the PHP default timezone. // Default: null
@@ -2133,30 +2085,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         ...<string, mixed>
  *     },
  * }
- * @psalm-type DoctrineMigrationsConfig = array{
- *     enable_service_migrations?: bool|Param, // Whether to enable fetching migrations from the service container. // Default: false
- *     migrations_paths?: array<string, scalar|Param|null>,
- *     services?: array<string, scalar|Param|null>,
- *     factories?: array<string, scalar|Param|null>,
- *     storage?: array{ // Storage to use for migration status metadata.
- *         table_storage?: array{ // The default metadata storage, implemented as a table in the database.
- *             table_name?: scalar|Param|null, // Default: null
- *             version_column_name?: scalar|Param|null, // Default: null
- *             version_column_length?: scalar|Param|null, // Default: null
- *             executed_at_column_name?: scalar|Param|null, // Default: null
- *             execution_time_column_name?: scalar|Param|null, // Default: null
- *         },
- *     },
- *     migrations?: list<scalar|Param|null>,
- *     connection?: scalar|Param|null, // Connection name to use for the migrations database. // Default: null
- *     em?: scalar|Param|null, // Entity manager name to use for the migrations database (available when doctrine/orm is installed). // Default: null
- *     all_or_nothing?: scalar|Param|null, // Run all migrations in a transaction. // Default: false
- *     check_database_platform?: scalar|Param|null, // Adds an extra check in the generated migrations to allow execution only on the same platform as they were initially generated on. // Default: true
- *     custom_template?: scalar|Param|null, // Custom template path for generated migration classes. // Default: null
- *     organize_migrations?: scalar|Param|null, // Organize migrations mode. Possible values are: "BY_YEAR", "BY_YEAR_AND_MONTH", false // Default: false
- *     enable_profiler?: bool|Param, // Whether or not to enable the profiler collector to calculate and visualize migration status. This adds some queries overhead. // Default: false
- *     transactional?: bool|Param, // Whether or not to wrap migrations in a single transaction. // Default: true
- * }
  * @psalm-type TwigConfig = array{
  *     form_themes?: list<scalar|Param|null>,
  *     globals?: array<string, array{ // Default: []
@@ -2205,16 +2133,12 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     controller_paths?: list<scalar|Param|null>,
  *     controllers_json?: scalar|Param|null, // Default: "%kernel.project_dir%/assets/controllers.json"
  * }
- * @psalm-type LiveComponentConfig = array{
- *     secret?: scalar|Param|null, // The secret used to compute fingerprints and checksums // Default: "%kernel.secret%"
- *     fetch_credentials?: "same-origin"|"include"|"omit"|Param, // The default fetch credentials mode for all Live Components ('same-origin', 'include', 'omit') // Default: "same-origin"
- * }
  * @psalm-type TurboConfig = array{
  *     broadcast?: bool|array{
  *         enabled?: bool|Param, // Default: true
  *         entity_template_prefixes?: list<scalar|Param|null>,
  *         doctrine_orm?: bool|array{ // Enable the Doctrine ORM integration
- *             enabled?: bool|Param, // Default: true
+ *             enabled?: bool|Param, // Default: false
  *         },
  *     },
  *     default_transport?: scalar|Param|null, // Default: "default"
@@ -2299,14 +2223,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     framework?: FrameworkConfig,
  *     ai?: AiConfig,
  *     mcp?: McpConfig,
- *     mercure?: MercureConfig,
  *     monolog?: MonologConfig,
  *     doctrine?: DoctrineConfig,
- *     doctrine_migrations?: DoctrineMigrationsConfig,
  *     twig?: TwigConfig,
  *     twig_component?: TwigComponentConfig,
  *     stimulus?: StimulusConfig,
- *     live_component?: LiveComponentConfig,
  *     turbo?: TurboConfig,
  *     twig_extra?: TwigExtraConfig,
  *     "when@dev"?: array{
@@ -2316,14 +2237,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         framework?: FrameworkConfig,
  *         ai?: AiConfig,
  *         mcp?: McpConfig,
- *         mercure?: MercureConfig,
  *         monolog?: MonologConfig,
  *         doctrine?: DoctrineConfig,
- *         doctrine_migrations?: DoctrineMigrationsConfig,
  *         twig?: TwigConfig,
  *         twig_component?: TwigComponentConfig,
  *         stimulus?: StimulusConfig,
- *         live_component?: LiveComponentConfig,
  *         turbo?: TurboConfig,
  *         debug?: DebugConfig,
  *         maker?: MakerConfig,
@@ -2338,14 +2256,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         framework?: FrameworkConfig,
  *         ai?: AiConfig,
  *         mcp?: McpConfig,
- *         mercure?: MercureConfig,
  *         monolog?: MonologConfig,
  *         doctrine?: DoctrineConfig,
- *         doctrine_migrations?: DoctrineMigrationsConfig,
  *         twig?: TwigConfig,
  *         twig_component?: TwigComponentConfig,
  *         stimulus?: StimulusConfig,
- *         live_component?: LiveComponentConfig,
  *         turbo?: TurboConfig,
  *         twig_extra?: TwigExtraConfig,
  *     },
@@ -2356,14 +2271,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         framework?: FrameworkConfig,
  *         ai?: AiConfig,
  *         mcp?: McpConfig,
- *         mercure?: MercureConfig,
  *         monolog?: MonologConfig,
  *         doctrine?: DoctrineConfig,
- *         doctrine_migrations?: DoctrineMigrationsConfig,
  *         twig?: TwigConfig,
  *         twig_component?: TwigComponentConfig,
  *         stimulus?: StimulusConfig,
- *         live_component?: LiveComponentConfig,
  *         turbo?: TurboConfig,
  *         web_profiler?: WebProfilerConfig,
  *         ux_toolkit?: UxToolkitConfig,
