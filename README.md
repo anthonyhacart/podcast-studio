@@ -4,7 +4,7 @@
 
 Built for the [Symfony AI & MCP Hackathon](https://symfony.com/hackathon) (November 2026). The whole show runs on [Mistral](https://mistral.ai): one API key writes, voices, listens and remembers.
 
-🎬 **Demo video (90 s)**: _link_
+🎬 **Demo video (90 s)**: https://youtu.be/dt7UmitixZ0
 
 ## Run it
 
