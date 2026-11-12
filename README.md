@@ -78,6 +78,16 @@ A few choices:
 - **Episodes and questions are files** (`var/episodes/`, `var/questions/`); the memory is derived from them: `symfony console ai:store:index archive` rebuilds it.
 - **A replay is exact**: with `CASSETTE` set, the clock stops on the recording day and the memory starts empty, so the requests match the recording (`src/Replay/`).
 
+## A showcase, not a product
+
+The project stops early on purpose: one show, two hosts, short episodes. It is there to show what Symfony AI and MCP make possible in a Symfony app once it can write, speak, listen and remember. The same pieces (an agent with structured output, a voice per character and emotion, a memory, tools an assistant drives) could become:
+
+- **Interactive stories**: each episode ends on a choice, listeners answer by voice, the next episode follows the vote.
+- **A release podcast**: the assistant reads the changelog and the merged pull requests, the hosts tell what changed this week.
+- **Language lessons**: dialogues at the learner's level, on the topics they ask for, with the transcript to read along.
+- **Audio documentation**: two hosts walk through a guide or an RFC, with chapters to jump to.
+- **A scheduled briefing**: Symfony Scheduler and a few feeds instead of a conversation, an episode every morning.
+
 ## Symfony AI inside
 
 | Component | Used for |
