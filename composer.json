@@ -1,4 +1,6 @@
 {
+    "name": "anthonyhacart/podcast-studio",
+    "description": "Ask your AI assistant for a podcast episode: an MCP server where two AI hosts write, voice and remember, built with Symfony AI.",
     "type": "project",
     "license": "MIT",
     "minimum-stability": "beta",
