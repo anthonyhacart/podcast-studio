@@ -13,7 +13,7 @@ Built for the [Symfony AI & MCP Hackathon](https://symfony.com/hackathon) (Novem
 Requirements: PHP 8.4+ (`pdo_pgsql`), Composer, the [Symfony CLI](https://symfony.com/download), Docker for Postgres.
 
 ```bash
-git clone <repo-url> podcast-studio && cd podcast-studio
+git clone https://github.com/anthonyhacart/podcast-studio.git && cd podcast-studio
 composer install
 docker compose up -d database           # Postgres + pgvector: the Symfony CLI exposes its DATABASE_URL
 symfony console ai:store:setup archive  # the table of the show's memory
@@ -95,7 +95,7 @@ Also: Symfony UX Toolkit (Bootstrap kit), Stimulus (microphone, chapters), Asset
 
 Found while building this project:
 
-- [symfony/ai#2873](https://github.com/symfony/ai/pull/2873): Voxtral text to speech in the Mistral bridge (merged). Not in a tagged release yet, so the project requires `symfony/ai-*` at `dev-main`.
+- [symfony/ai#2873](https://github.com/symfony/ai/pull/2873): Voxtral text to speech in the Mistral bridge (merged).
 - [symfony/ai#2894](https://github.com/symfony/ai/pull/2894): the Postgres store's hybrid query no longer drops documents that share no keyword with the query.
 
 ## Quality
