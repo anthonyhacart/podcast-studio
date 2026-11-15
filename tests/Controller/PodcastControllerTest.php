@@ -69,6 +69,15 @@ final class PodcastControllerTest extends WebTestCase
         self::assertSelectorExists('a[href="https://github.com/symfony/ai/pull/2894"]');
     }
 
+    public function testEveryPageLinksBackToTheSourceCode(): void
+    {
+        foreach (['/', '/about'] as $page) {
+            $this->client->request('GET', $page);
+
+            self::assertSelectorTextContains('footer a[href="https://github.com/anthonyhacart/podcast-studio"]', 'Source code on GitHub', $page);
+        }
+    }
+
     public function testFeedDescribesEachEpisodeForPodcastApps(): void
     {
         $this->publish();
