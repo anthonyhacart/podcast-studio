@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/logo.svg" alt="" width="160"></p>
+
 # Podcast Studio
 
 > Ask your AI assistant for a podcast episode on anything. It gathers the sources, two AI hosts write a sourced dialogue, you review the script in the conversation, and the voiced episode lands in a real podcast feed. Listeners ask the hosts questions by voice; the hosts remember what they said.
@@ -5,6 +7,14 @@
 Built for the [Symfony AI & MCP Hackathon](https://symfony.com/hackathon) (November 2026). The whole show runs on [Mistral](https://mistral.ai): one API key writes, voices, listens and remembers.
 
 🎬 **Demo video (90 s)**: https://youtu.be/dt7UmitixZ0
+
+## Contributions to Symfony AI
+
+Found while building this project:
+
+- [symfony/ai#2873](https://github.com/symfony/ai/pull/2873): Voxtral text to speech in the Mistral bridge (merged).
+- [symfony/ai#2894](https://github.com/symfony/ai/pull/2894): the Postgres store's hybrid query no longer drops documents that share no keyword with the query (merged).
+- [symfony/ai#2966](https://github.com/symfony/ai/pull/2966): Mistral's moderation models in the Mistral bridge (open).
 
 ## Run it
 
@@ -100,13 +110,6 @@ The project stops early on purpose: one show, two hosts, short episodes. It is t
 | Platform test replay | Cassettes: the demo and the end-to-end test run without a key |
 
 Also: Symfony UX Toolkit (Bootstrap kit), Stimulus (microphone, chapters), AssetMapper, Clock, Uid, Serializer, Validator (`#[MapUploadedFile]`).
-
-## Contributions to Symfony AI
-
-Found while building this project:
-
-- [symfony/ai#2873](https://github.com/symfony/ai/pull/2873): Voxtral text to speech in the Mistral bridge (merged).
-- [symfony/ai#2894](https://github.com/symfony/ai/pull/2894): the Postgres store's hybrid query no longer drops documents that share no keyword with the query.
 
 ## Quality
 
