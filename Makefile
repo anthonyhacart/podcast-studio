@@ -28,9 +28,9 @@ demo: ## Make an episode from recorded API responses (no API key needed)
 	$(DC) exec -e CASSETTE=fixtures/cassettes/worlds-2026.json php php bin/console app:episode fixtures/briefs/worlds-2026.json
 	@printf "\n✓ Listen → http://localhost:%s\n" "$$(grep -E '^HTTP_PORT=' .env | cut -d= -f2)"
 
-cassette: ## Record the cassettes again, live (needs MISTRAL_API_KEY in .env.local)
+cassette: ## Record the cassettes again, live (needs MISTRAL_API_KEY and TAVILY_API_KEY in .env.local)
 	rm -f fixtures/cassettes/*.json
-	$(DC) exec php sh -c 'MISTRAL_API_KEY="$$(grep ^MISTRAL_API_KEY= .env.local | cut -d= -f2- | tr -d \")" vendor/bin/phpunit --group cassette'
+	$(DC) exec php sh -c 'MISTRAL_API_KEY="$$(grep ^MISTRAL_API_KEY= .env.local | cut -d= -f2- | tr -d \")" TAVILY_API_KEY="$$(grep ^TAVILY_API_KEY= .env.local | cut -d= -f2- | tr -d \")" vendor/bin/phpunit --group cassette'
 
 ## —— Dev ————————————————————————————————————————————————————
 sh: ## Shell in the PHP container

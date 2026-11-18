@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Episode;
 
 /**
- * A source brought by the client: what it read, not a page for the server to fetch.
+ * A source brought by the editor: what the MCP client read, or the text of a page
+ * given as a link in the browser (SourceReader).
  */
 final readonly class Source
 {

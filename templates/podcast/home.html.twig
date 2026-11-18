@@ -4,6 +4,7 @@
 
 {% block body %}
     <main class="container py-5" style="max-width: 48rem">
+        {{ include('_flashes.html.twig') }}
         <header class="mb-5">
             <h1 class="display-5 fw-bold">{{ show.title }}</h1>
             <p class="lead text-body-secondary">{{ show.description }} <a href="{{ path('app_about') }}">How it is made</a></p>
@@ -77,9 +78,14 @@
         {% else %}
             <twig:Card class="text-center">
                 <twig:Card:Body class="empty py-5 text-body-secondary">
-                    No episode yet. Connect your MCP client to <code>{{ url('_mcp_endpoint_default') }}</code> and ask it for one.
+                    No episode yet. Connect your MCP client to <code>{{ url('_mcp_endpoint_default') }}</code> and ask it for one,
+                    or <a href="{{ path('app_studio_new') }}">make one here</a>.
                 </twig:Card:Body>
             </twig:Card>
         {% endfor %}
+
+        {% if episodes %}
+            <p class="text-center"><a href="{{ path('app_studio_new') }}">Make a new episode</a></p>
+        {% endif %}
     </main>
 {% endblock %}

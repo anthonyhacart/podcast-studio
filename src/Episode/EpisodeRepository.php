@@ -63,6 +63,11 @@ final readonly class EpisodeRepository
         return $this->read($id, 'episode.json', Published::class);
     }
 
+    public function isPublished(string $id): bool
+    {
+        return $this->filesystem->exists($this->path($id, 'episode.json'));
+    }
+
     /**
      * @return list<Published> newest first
      */

@@ -13,6 +13,19 @@ ai:
                 file: '%kernel.project_dir%/config/prompts/writer.md'
             tools:
                 - App\Archive\PastEpisodes
+        # Finds pages on the web for an editor who brings no source; Researcher reads the pages it picks.
+        researcher:
+            platform: 'ai.platform.mistral'
+            model: '%env(RESEARCHER_MODEL)%'
+            prompt:
+                file: '%kernel.project_dir%/config/prompts/researcher.md'
+            tools:
+                - service: Symfony\AI\Agent\Bridge\Tavily\Tavily
+                  name: web_search
+                  description: 'Searches the web: returns the title, the URL and an extract of the best pages for a query.'
+                  method: search
+            # the pages the search returned, to check the agent picks among them
+            include_sources: true
 
     # The show's memory: every line of the published episodes, searchable by meaning.
     # The store is "app.archive" (src/Replay/ReplayableStore.php): Postgres, empty in memory for replays.

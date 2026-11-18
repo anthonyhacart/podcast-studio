@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New episode · {{ show.title }}{% endblock %}
+
+{% block body %}
+    <main class="container py-5" style="max-width: 48rem">
+        <p><a href="{{ path('app_home') }}">← {{ show.title }}</a></p>
+        <h1 class="display-6 fw-bold mb-3">New episode</h1>
+        <p class="lead text-body-secondary mb-4">Bring the topic and the sources: Paul and Jane write the script, you review it before they record.</p>
+
+        {{ form_start(form, {attr: {'data-controller': 'sources'}}) }}
+            {{ form_widget(form) }}
+            <twig:Button type="submit" data-turbo-submits-with="The hosts are writing…">Write the script</twig:Button>
+        {{ form_end(form) }}
+    </main>
+{% endblock %}

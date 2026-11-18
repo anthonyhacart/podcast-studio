@@ -47,6 +47,14 @@ services:
     App\:
         resource: '../src/'
 
+    # the web search of the "researcher" agent (config/packages/ai.yaml)
+    Symfony\AI\Agent\Bridge\Tavily\Tavily:
+        arguments:
+            # recorded and replayed like the Mistral API when CASSETTE is set
+            $httpClient: '@App\Replay\ReplayableHttpClient'
+            $apiKey: '%env(TAVILY_API_KEY)%'
+            $options: { include_images: false, max_results: 8 }
+
 when@test:
     parameters:
         app.episodes_dir: '%kernel.cache_dir%/episodes'

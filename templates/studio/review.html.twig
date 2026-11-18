@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ script.title }} · {{ show.title }}{% endblock %}
+
+{% block body %}
+    <main class="container py-5" style="max-width: 48rem">
+        <p><a href="{{ path('app_home') }}">← {{ show.title }}</a></p>
+        {{ include('_flashes.html.twig') }}
+        <p class="text-body-secondary mb-1">Draft, not recorded yet</p>
+        <h1 class="display-6 fw-bold mb-3">{{ script.title }}</h1>
+        {% if script.summary %}
+            <p class="summary lead">{{ script.summary }}</p>
+        {% endif %}
+
+        <twig:Card class="mb-4 shadow-sm">
+            <twig:Card:Body class="script">
+                {% for line in script.lines %}
+                    {% if line.chapter %}
+                        <h2 class="h5 {{ loop.first ? '' : 'mt-4' }}">{{ line.chapter }}</h2>
+                    {% endif %}
+                    <p class="{{ loop.last ? 'mb-0' : '' }}">
+                        <strong>{{ show.hosts[line.host].name ?? line.host }}</strong>
+                        <span class="text-body-secondary small">({{ line.emotion }})</span>
+                        {{ line.text }}
+                        {% for number in line.sources %}<sup><a href="#source-{{ number }}">[{{ number }}]</a></sup>{% endfor %}
+                    </p>
+                {% endfor %}
+            </twig:Card:Body>
+        </twig:Card>
+
+        <h2 class="h5">Sources</h2>
+        <p class="text-body-secondary small">The hosts can get a fact wrong: compare what they say with the sources before they record.</p>
+        <ol class="sources mb-4">
+            {% for source in brief.sources %}
+                <li id="source-{{ loop.index }}">{% if source.url %}<a href="{{ source.url }}" target="_blank" rel="noopener">{{ source.title }}</a>{% else %}{{ source.title }}{% endif %}</li>
+            {% endfor %}
+        </ol>
+        {% if brief.questions %}
+            <h2 class="h5">Listener questions</h2>
+            <ul class="mb-4">
+                {% for question in brief.questions %}
+                    <li>{{ question.name ?? 'A listener' }}: {{ question.text }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <twig:Button type="submit" color="secondary" outline data-turbo-submits-with="The hosts are rewriting…">Rewrite the script</twig:Button>
+        {{ form_end(form) }}
+
+        <form class="mt-4" method="post" action="{{ path('app_studio_publish', {id: id}) }}">
+            <twig:Button type="submit" color="danger" size="lg" data-turbo-submits-with="The hosts are recording…">Record and publish</twig:Button>
+        </form>
+    </main>
+{% endblock %}

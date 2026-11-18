@@ -2,9 +2,9 @@
 
 # Podcast Studio
 
-> Ask your AI assistant for a podcast episode on anything. It gathers the sources, two AI hosts write a sourced dialogue, you review the script in the conversation, and the voiced episode lands in a real podcast feed. Listeners ask the hosts questions by voice; the hosts remember what they said.
+> Ask your AI assistant for a podcast episode on anything. It gathers the sources, two AI hosts write a sourced dialogue, you review the script in the conversation, and the voiced episode lands in a real podcast feed. Listeners ask the hosts questions by voice; the hosts remember what they said. No assistant? Do it in the browser, where the hosts can search the web themselves.
 
-Built for the [Symfony AI & MCP Hackathon](https://symfony.com/hackathon) (November 2026). The whole show runs on [Mistral](https://mistral.ai): one API key writes, voices, listens and remembers.
+Built for the [Symfony AI & MCP Hackathon](https://symfony.com/hackathon) (November 2026). The whole show runs on [Mistral](https://mistral.ai): one API key writes, voices, listens and remembers. A second, optional key ([Tavily](https://tavily.com)) lets the hosts search the web.
 
 🎬 **Demo video (90 s)**: https://youtu.be/dt7UmitixZ0
 
@@ -47,10 +47,12 @@ Open http://localhost:8002.
 
 ### Live
 
-Put a [Mistral](https://console.mistral.ai/) key in `.env.local` (never committed), then connect an MCP client.
+Put a [Mistral](https://console.mistral.ai/) key in `.env.local` (never committed), then connect an MCP client or open `/studio`.
 
 ```dotenv
 MISTRAL_API_KEY=
+# optional: lets the hosts search the web for their sources in /studio (the free plan is enough)
+TAVILY_API_KEY=
 ```
 
 ## Use it from an MCP client
@@ -71,11 +73,23 @@ Claude Desktop speaks STDIO: run `bin/console mcp:server` with `APP_DEBUG=0` (wi
 
 Then ask: *"Check the listener questions and make a 2-minute episode about the Worlds final. Look for reliable sources first."* Read the script, ask for changes, approve, listen.
 
+## Or from the browser
+
+No MCP client? Open http://127.0.0.1:8000/studio (port 8002 with Docker only): you are the editor.
+
+1. **Give a topic**, a length, a tone, and tick the listener questions to answer.
+2. **Choose where the facts come from.** With a `TAVILY_API_KEY`, "Let the hosts search the web for their sources" is ticked: the hosts find up to five pages themselves. Untick it to give your own links, one per line. Either way you can add notes of your own.
+3. **Review the script**, each line next to the sources it cites, and ask for changes until it is right.
+4. **Record and publish**: the episode lands on the home page and in the feed.
+
+The same `Studio` service runs behind the MCP tools and behind these pages; the browser only adds what an MCP client does on its own, finding and reading the sources.
+
 ## How the AI is used
 
-**The MCP client is the editor-in-chief, the server is the studio.** The client brings the sources (web search, files) and reviews the script with you; the server owns the show: hosts, rules, voices, memory.
+**The MCP client is the editor-in-chief, the server is the studio.** The client brings the sources (web search, files) and reviews the script with you; the server owns the show: hosts, rules, voices, memory. In the browser, you are the editor-in-chief, and the server reads the sources for you.
 
 - **A writer agent** turns the brief into a structured script: lines with host, emotion, cited sources, chapters and a summary. Rules in code check it (known hosts, existing sources, length, no "today" in an episode heard later) and send it back once with the problems.
+- **A researcher agent**, for an editor who brings no source: it searches the web and picks up to five pages. It only chooses: a pick the search did not return is dropped, and the writer gets the text of the pages, read by the server, not a summary by a model.
 - **The show remembers.** Published lines are embedded into pgvector. The writer has its own tool, `search_past_episodes`, and decides what to look up, so the hosts refer back instead of repeating themselves.
 - **Listeners have a voice.** A question recorded on the page is transcribed and waits for an episode; a host reads it out with the listener's name.
 - **Voices per emotion.** Each line is voiced with the host's voice for its emotion, all lines at once, then joined in PHP (no ffmpeg). When the voice service's moderation refuses a line, the writer rephrases that line only.
@@ -83,14 +97,14 @@ Then ask: *"Check the listener questions and make a 2-minute episode about the W
 
 A few choices:
 
-- **Facts are checked by the client**, which gathered the sources, during the review. A server-side fact-checking agent was tried and dropped: it flagged faithful paraphrases and missed real errors.
+- **Facts are checked by the editor** during the review: the MCP client, which gathered the sources, or you in the browser, with the sources linked next to the script. A server-side fact-checking agent was tried and dropped: it flagged faithful paraphrases and missed real errors.
 - **Models are pinned**: Mistral's `-latest` aliases can point to older models.
 - **Episodes and questions are files** (`var/episodes/`, `var/questions/`); the memory is derived from them: `symfony console ai:store:index archive` rebuilds it.
 - **A replay is exact**: with `CASSETTE` set, the clock stops on the recording day and the memory starts empty, so the requests match the recording (`src/Replay/`).
 
 ## A showcase, not a product
 
-The project stops early on purpose: one show, two hosts, short episodes. It is there to show what Symfony AI and MCP make possible in a Symfony app once it can write, speak, listen and remember. The same pieces (an agent with structured output, a voice per character and emotion, a memory, tools an assistant drives) could become:
+The project stops early on purpose: one show, two hosts, short episodes, and no login: anyone who reaches `/studio` or the MCP endpoint can spend your API keys, so run it locally. It is there to show what Symfony AI and MCP make possible in a Symfony app once it can write, speak, listen and remember. The same pieces (an agent with structured output, a voice per character and emotion, a memory, tools an assistant drives) could become:
 
 - **Interactive stories**: each episode ends on a choice, listeners answer by voice, the next episode follows the vote.
 - **A release podcast**: the assistant reads the changelog and the merged pull requests, the hosts tell what changed this week.
@@ -103,19 +117,20 @@ The project stops early on purpose: one show, two hosts, short episodes. It is t
 | Component | Used for |
 | --- | --- |
 | MCP Bundle + PHP MCP SDK | Five tools, server `instructions` for any client, readable tool errors, HTTP and STDIO |
-| AI Bundle, Agent | The `writer` agent (prompt in `config/prompts/writer.md`) and its toolbox (`#[AsTool]`) |
-| Platform, structured output | `Script` and `Line` DTOs as the agent's response format |
+| AI Bundle, Agent | Two agents, `writer` and `researcher` (prompts in `config/prompts/`), each with its toolbox |
+| Agent, tools | `search_past_episodes`, the project's own tool (`#[AsTool]`), and the Tavily bridge for the web search; the sources that bridge collects (`include_sources`) limit what the researcher can pick |
+| Platform, structured output | `Script`, `Line` and `Findings` DTOs as the agents' response formats |
 | Platform, Mistral bridge | Chat (`mistral-medium-2604`), text to speech (`voxtral-mini-tts-3-0`), speech to text (`voxtral-mini-transcribe-3-0`), embeddings (`mistral-embed`) |
 | Store, Postgres bridge | The show's memory: a vectorizer, an indexer with a custom loader, pgvector |
-| Platform test replay | Cassettes: the demo and the end-to-end test run without a key |
+| Platform test replay | Cassettes: the demo and the end-to-end tests run without a key |
 
-Also: Symfony UX Toolkit (Bootstrap kit), Stimulus (microphone, chapters), AssetMapper, Clock, Uid, Serializer, Validator (`#[MapUploadedFile]`).
+Also: Symfony UX Toolkit (Bootstrap kit), Stimulus (microphone, chapters), AssetMapper, Clock, Uid, Serializer, Validator (`#[MapUploadedFile]`), Form, and to read the pages given as sources, HttpClient (`NoPrivateNetworkHttpClient`: a link never reaches the private network) and DomCrawler.
 
 ## Quality
 
 ```bash
-make qa        # coding standards, PHPStan (max), tests, including a full episode replayed from cassettes
-make cassette  # records the cassettes again, live
+make qa        # coding standards, PHPStan (max), tests, including full episodes replayed from cassettes (over MCP and in the browser)
+make cassette  # records the cassettes again, live (needs both keys in .env.local)
 ```
 
 ## License

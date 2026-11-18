@@ -11,9 +11,9 @@ use Symfony\Component\HttpClient\DecoratorTrait;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
- * The HTTP client of the Mistral platform. With CASSETTE set, it records the API
- * responses to that file the first time, then replays them: `make demo` runs the
- * whole pipeline (writer agent, voice) without an API key.
+ * The HTTP client of the Mistral platform and of the researcher's web search (Tavily).
+ * With CASSETTE set, it records the API responses to that file the first time, then
+ * replays them: `make demo` runs the whole pipeline (writer agent, voice) without an API key.
  */
 final class ReplayableHttpClient implements HttpClientInterface
 {
