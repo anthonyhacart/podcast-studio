@@ -20,6 +20,9 @@ final readonly class ScriptChecker
     // episodes are heard later: relative days would be wrong by then
     private const RELATIVE_DAYS = '/\b(today|tonight|tomorrow|yesterday|this (?:week|weekend|morning|evening)|last (?:night|week)|next week)\b/i';
 
+    // a voice does not read emphasis, and the transcript would show the marks
+    private const MARKUP = '/[*_`]/';
+
     public function __construct(
         private Show $show,
     ) {
@@ -51,6 +54,9 @@ final readonly class ScriptChecker
             }
             if (preg_match(self::RELATIVE_DAYS, $line->text, $match)) {
                 $problems[] = \sprintf('Line %d says "%s": give the date itself, people listen later.', $n, $match[1]);
+            }
+            if (preg_match(self::MARKUP, $line->text, $match)) {
+                $problems[] = \sprintf('Line %d has markup ("%s"): write plain words only, a voice reads them.', $n, $match[0]);
             }
             if (mb_strlen($line->text) > self::MAX_LINE_CHARACTERS) {
                 $problems[] = \sprintf('Line %d is too long for a spoken line (%d characters, max %d).', $n, mb_strlen($line->text), self::MAX_LINE_CHARACTERS);

@@ -28,18 +28,49 @@ final class Mp3JoinerTest extends TestCase
         self::assertSame(0xFFE0, ((\ord($mp3[0]) << 8) | \ord($mp3[1])) & 0xFFE0, 'starts with an MPEG frame');
     }
 
-    public function testDropsTheId3TagAndTheXingHeader(): void
+    public function testDropsTheId3TagAndTheXingHeaderOfAClip(): void
     {
         $joiner = new Mp3Joiner(new Filesystem(), self::PAUSE);
-        [$plain] = $joiner->join([(string) file_get_contents(self::PAUSE)]);
+        $clip = (string) file_get_contents(self::PAUSE);
+        [$plain] = $joiner->join([$clip]);
 
         // an ID3v2 tag (10-byte header, 4-byte payload) and an empty Xing frame in front of the same audio
         // a real Xing tag sits right after the side info (9 bytes for MPEG 2 mono)
-        $xing = str_pad(substr($plain, 0, 4).str_repeat("\0", 9).'Xing', \strlen($this->firstFrame($plain)), "\0");
-        [$joined, [[, $seconds]]] = $joiner->join(["ID3\x04\x00\x00\x00\x00\x00\x04TAG!".$xing.$plain]);
+        $xing = str_pad(substr($clip, 0, 4).str_repeat("\0", 9).'Xing', \strlen($this->firstFrame($clip)), "\0");
+        [$joined, [[, $seconds]]] = $joiner->join(["ID3\x04\x00\x00\x00\x00\x00\x04TAG!".$xing.$clip]);
 
         self::assertSame($plain, $joined);
         self::assertGreaterThan(0.3, $seconds);
+    }
+
+    public function testTellsPlayersTheRealLengthInAHeaderFrame(): void
+    {
+        $joiner = new Mp3Joiner(new Filesystem(), self::PAUSE);
+        $clip = (string) file_get_contents(self::PAUSE);
+        [$mp3, $timings] = $joiner->join([$clip, $clip]);
+
+        // 64 kbps, 22,050 Hz, MPEG 2 layer III mono, no padding: a frame of 208 bytes, the tag after 9 bytes of side info
+        self::assertSame("\xFF\xF3\x80\xC4", substr($mp3, 0, 4));
+        self::assertSame('Xing', substr($mp3, 13, 4));
+        ['flags' => $flags, 'frames' => $frames, 'bytes' => $bytes] = (array) unpack('Nflags/Nframes/Nbytes', $mp3, 17);
+        self::assertSame(7, $flags, 'frame count, byte count and seek table');
+        self::assertIsInt($frames);
+        self::assertSame(\strlen($mp3), $bytes);
+        // a frame is 576 samples at 22,050 Hz: the frame count gives the length the timings give
+        self::assertEqualsWithDelta($timings[1][1], $frames * 576 / 22050, 0.001);
+        // the seek table: where each percent of the length starts, out of 256, from the first audio frame to near the end
+        $seekTable = array_map(\ord(...), str_split(substr($mp3, 29, 100)));
+        self::assertSame(intdiv(256 * 208, \strlen($mp3)), $seekTable[0]);
+        self::assertGreaterThan(128, $seekTable[99]);
+        $sorted = $seekTable;
+        sort($sorted);
+        self::assertSame($sorted, $seekTable);
+        self::assertSame(0xFFE0, ((\ord($mp3[208]) << 8) | \ord($mp3[209])) & 0xFFE0, 'the audio follows');
+    }
+
+    public function testJoiningNothingGivesNothing(): void
+    {
+        self::assertSame(['', []], new Mp3Joiner(new Filesystem(), self::PAUSE)->join([]));
     }
 
     private function firstFrame(string $mp3): string

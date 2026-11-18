@@ -63,6 +63,14 @@ final class ScriptCheckerTest extends TestCase
         self::assertSame(['Line 1 says "Tomorrow": give the date itself, people listen later.'], $this->checker->check($script, Fixtures::brief()));
     }
 
+    public function testRejectsMarkupAVoiceDoesNotRead(): void
+    {
+        $script = Fixtures::script();
+        $script = new Script($script->title, [...$script->lines, new Line('paul', 'neutral', 'Bears eat *nonstop* in autumn.', [])], $script->summary);
+
+        self::assertSame(['Line 11 has markup ("*"): write plain words only, a voice reads them.'], $this->checker->check($script, Fixtures::brief()));
+    }
+
     public function testRejectsEmptyAndOverlongLines(): void
     {
         $script = Fixtures::script();
