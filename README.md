@@ -6,7 +6,9 @@
 
 Built for the [Symfony AI & MCP Hackathon](https://symfony.com/hackathon) (November 2026). The whole show runs on [Mistral](https://mistral.ai): one API key writes, voices, listens and remembers. A second, optional key ([Tavily](https://tavily.com)) lets the hosts search the web.
 
-🎬 **Demo video (90 s)**: https://youtu.be/dt7UmitixZ0
+🎬 **Demo video (90 s)**: https://youtu.be/JmGE-XR2vaU
+
+🎧 **Try it online**: https://podcast.hacart.fr, a public demo that stays up for the hackathon. Listen, record a question for the hosts, or [make an episode in the browser](https://podcast.hacart.fr/studio): two a day for each visitor.
 
 ## Contributions to Symfony AI
 
