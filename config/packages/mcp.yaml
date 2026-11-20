@@ -17,3 +17,11 @@ mcp:
             # bin/console mcp:server, for clients that only speak STDIO (run it with APP_DEBUG=0: any other output breaks the protocol)
             transports:
                 stdio: true
+
+when@prod:
+    mcp:
+        servers:
+            default:
+                http:
+                    # online, the server answers on the show's own domain (DEFAULT_URI); elsewhere it only answers on localhost
+                    allowed_hosts: ['%env(key:host:url:DEFAULT_URI)%']
