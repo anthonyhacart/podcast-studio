@@ -1481,7 +1481,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             index_name?: string|Param,
  *             namespace?: string|Param,
  *             filter?: list<scalar|Param|null>,
- *             top_k?: int|Param,
+ *             limit?: int|Param,
  *             dimensions?: int|Param, // Number of dimensions of the index created by "ai:store:setup"
  *             metric?: "cosine"|"euclidean"|"dotproduct"|Param, // Distance metric of the index created by "ai:store:setup"
  *             cloud?: string|Param, // Cloud of the serverless index created by "ai:store:setup"
@@ -1496,10 +1496,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             metric?: "cosine"|"inner_product"|"l1"|"l2"|Param, // Distance metric to use for vector similarity search // Default: "l2"
  *             lang?: string|Param, // Default: "english"
  *             dbal_connection?: string|Param,
- *             dimensions?: int|Param, // Number of dimensions of the vector column created by "ai:store:setup"
- *             vector_type?: "vector"|"halfvec"|Param, // Type of the vector column created by "ai:store:setup"
- *             index_method?: string|Param, // The pgvector index method, "hnsw" by default.
- *             index_opclass?: string|Param, // The operator class of the index, the one of the distance by default (e.g. "vector_l2_ops").
+ *             dimensions?: int|Param, // Number of dimensions of the vector column created by "ai:store:setup" // Default: 1536
+ *             vector_type?: "vector"|"halfvec"|Param, // Type of the vector column created by "ai:store:setup" // Default: "vector"
+ *             index_method?: string|Param, // The pgvector index method // Default: "hnsw"
+ *             index_opclass?: string|Param, // The operator class of the index, the one of the distance by default (e.g. "vector_l2_ops"). // Default: null
  *         }>,
  *         qdrant?: array<string, array{ // Default: []
  *             endpoint?: string|Param,
@@ -1526,7 +1526,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             filter?: list<mixed>,
  *             dimensions?: int|Param, // Number of dimensions of the index created by "ai:store:setup"
  *             metric?: "cosine"|"euclidean"|Param, // Distance metric of the index created by "ai:store:setup"
- *             top_k?: int|Param, // Default number of results to return // Default: 3
+ *             limit?: int|Param, // Default number of results to return // Default: 3
  *         }>,
  *         sqlite?: array<string, array{ // Default: []
  *             dsn?: string|Param,

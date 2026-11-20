@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "52c9a498fda34fd77e43595b083502c4",
+    "content-hash": "64d553cecf781ba1b30f8f4bf1872284",
     "packages": [
         {
             "name": "composer/semver",
@@ -2001,12 +2001,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ai-agent.git",
-                "reference": "82e46dcc082cda4f5e6b128f62fdf50983d3bcf9"
+                "reference": "678e627ce0db7df6a6e5749b95f668c7e3e879cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ai-agent/zipball/82e46dcc082cda4f5e6b128f62fdf50983d3bcf9",
-                "reference": "82e46dcc082cda4f5e6b128f62fdf50983d3bcf9",
+                "url": "https://api.github.com/repos/symfony/ai-agent/zipball/678e627ce0db7df6a6e5749b95f668c7e3e879cf",
+                "reference": "678e627ce0db7df6a6e5749b95f668c7e3e879cf",
                 "shasum": ""
             },
             "require": {
@@ -2100,7 +2100,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-27T20:26:29+00:00"
+            "time": "2026-11-14T13:38:14+00:00"
         },
         {
             "name": "symfony/ai-bundle",
@@ -2108,12 +2108,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ai-bundle.git",
-                "reference": "9b51a15c5338799e02b7823f3a2eb2fe8a27a59f"
+                "reference": "32e4f2c989f9390817d6c1c171e6b2ea0205885c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ai-bundle/zipball/9b51a15c5338799e02b7823f3a2eb2fe8a27a59f",
-                "reference": "9b51a15c5338799e02b7823f3a2eb2fe8a27a59f",
+                "url": "https://api.github.com/repos/symfony/ai-bundle/zipball/32e4f2c989f9390817d6c1c171e6b2ea0205885c",
+                "reference": "32e4f2c989f9390817d6c1c171e6b2ea0205885c",
                 "shasum": ""
             },
             "require": {
@@ -2270,7 +2270,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-11-03T20:39:36+00:00"
+            "time": "2026-11-14T13:38:18+00:00"
         },
         {
             "name": "symfony/ai-generic-platform",
@@ -2278,12 +2278,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ai-generic-platform.git",
-                "reference": "ea6ca3d9d02b3d33f8140731feff5a871b803e61"
+                "reference": "b2f68a55b25b2d2512cd2263f5b8437367d9e2f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ai-generic-platform/zipball/ea6ca3d9d02b3d33f8140731feff5a871b803e61",
-                "reference": "ea6ca3d9d02b3d33f8140731feff5a871b803e61",
+                "url": "https://api.github.com/repos/symfony/ai-generic-platform/zipball/b2f68a55b25b2d2512cd2263f5b8437367d9e2f3",
+                "reference": "b2f68a55b25b2d2512cd2263f5b8437367d9e2f3",
                 "shasum": ""
             },
             "require": {
@@ -2356,7 +2356,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-27T21:08:58+00:00"
+            "time": "2026-11-15T18:50:01+00:00"
         },
         {
             "name": "symfony/ai-mistral-platform",
@@ -2364,12 +2364,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ai-mistral-platform.git",
-                "reference": "2817d055fc1679035daa36622e4439c116eb11a0"
+                "reference": "560a113110bdceeb9133d0f3c5f134e0fe2d982c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ai-mistral-platform/zipball/2817d055fc1679035daa36622e4439c116eb11a0",
-                "reference": "2817d055fc1679035daa36622e4439c116eb11a0",
+                "url": "https://api.github.com/repos/symfony/ai-mistral-platform/zipball/560a113110bdceeb9133d0f3c5f134e0fe2d982c",
+                "reference": "560a113110bdceeb9133d0f3c5f134e0fe2d982c",
                 "shasum": ""
             },
             "require": {
@@ -2443,7 +2443,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-11-03T20:47:22+00:00"
+            "time": "2026-11-15T19:17:58+00:00"
         },
         {
             "name": "symfony/ai-platform",
@@ -2451,12 +2451,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ai-platform.git",
-                "reference": "66cadaedcb45ecb8540f517743c75ea0779892f8"
+                "reference": "c2a82b1ed5d9067d3b7654151fec55d238947063"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ai-platform/zipball/66cadaedcb45ecb8540f517743c75ea0779892f8",
-                "reference": "66cadaedcb45ecb8540f517743c75ea0779892f8",
+                "url": "https://api.github.com/repos/symfony/ai-platform/zipball/c2a82b1ed5d9067d3b7654151fec55d238947063",
+                "reference": "c2a82b1ed5d9067d3b7654151fec55d238947063",
                 "shasum": ""
             },
             "require": {
@@ -2584,7 +2584,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-11-03T20:47:22+00:00"
+            "time": "2026-11-12T18:47:22+00:00"
         },
         {
             "name": "symfony/ai-postgres-store",
@@ -2592,12 +2592,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ai-postgres-store.git",
-                "reference": "74a2b1dd92c395b0940584c1e7fd9ab9803b33bd"
+                "reference": "aa4b8effa801f64c8e341d587eae58e4501822ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ai-postgres-store/zipball/74a2b1dd92c395b0940584c1e7fd9ab9803b33bd",
-                "reference": "74a2b1dd92c395b0940584c1e7fd9ab9803b33bd",
+                "url": "https://api.github.com/repos/symfony/ai-postgres-store/zipball/aa4b8effa801f64c8e341d587eae58e4501822ff",
+                "reference": "aa4b8effa801f64c8e341d587eae58e4501822ff",
                 "shasum": ""
             },
             "require": {
@@ -2677,7 +2677,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-26T14:03:07+00:00"
+            "time": "2026-11-17T03:36:25+00:00"
         },
         {
             "name": "symfony/ai-store",
@@ -2685,12 +2685,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ai-store.git",
-                "reference": "71ecd035324e61312204508209ca764511a974f2"
+                "reference": "3fb33b0b56cc4d8748f950023371f24cc1c37993"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ai-store/zipball/71ecd035324e61312204508209ca764511a974f2",
-                "reference": "71ecd035324e61312204508209ca764511a974f2",
+                "url": "https://api.github.com/repos/symfony/ai-store/zipball/3fb33b0b56cc4d8748f950023371f24cc1c37993",
+                "reference": "3fb33b0b56cc4d8748f950023371f24cc1c37993",
                 "shasum": ""
             },
             "require": {
@@ -2792,7 +2792,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-26T14:03:07+00:00"
+            "time": "2026-11-15T19:12:26+00:00"
         },
         {
             "name": "symfony/ai-tavily-tool",
@@ -5496,6 +5496,79 @@
             "time": "2026-10-18T14:56:39+00:00"
         },
         {
+            "name": "symfony/password-hasher",
+            "version": "v8.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/password-hasher.git",
+                "reference": "6934d16beaa4677f2c4584229fff1b51099dd7af"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/password-hasher/zipball/6934d16beaa4677f2c4584229fff1b51099dd7af",
+                "reference": "6934d16beaa4677f2c4584229fff1b51099dd7af",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.4.1"
+            },
+            "require-dev": {
+                "symfony/console": "^7.4|^8.0",
+                "symfony/security-core": "^7.4|^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\PasswordHasher\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Robin Chalas",
+                    "email": "robin.chalas@gmail.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Provides password hashing utilities",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "hashing",
+                "password"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/password-hasher/tree/v8.1.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-05-29T05:06:50+00:00"
+        },
+        {
             "name": "symfony/polyfill-deepclone",
             "version": "v1.43.2",
             "source": {
@@ -6589,6 +6662,161 @@
                 }
             ],
             "time": "2026-10-23T17:06:53+00:00"
+        },
+        {
+            "name": "symfony/security-core",
+            "version": "v8.1.11",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/security-core.git",
+                "reference": "be90ca4c54111d6baec4690d78742283d262ca33"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/security-core/zipball/be90ca4c54111d6baec4690d78742283d262ca33",
+                "reference": "be90ca4c54111d6baec4690d78742283d262ca33",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.4.1",
+                "symfony/event-dispatcher-contracts": "^2.5|^3",
+                "symfony/password-hasher": "^7.4|^8.0",
+                "symfony/service-contracts": "^2.5|^3"
+            },
+            "require-dev": {
+                "psr/cache": "^1.0|^2.0|^3.0",
+                "psr/container": "^1.1|^2.0",
+                "psr/log": "^1|^2|^3",
+                "symfony/cache": "^7.4|^8.0",
+                "symfony/dependency-injection": "^7.4|^8.0",
+                "symfony/event-dispatcher": "^7.4|^8.0",
+                "symfony/expression-language": "^7.4|^8.0",
+                "symfony/http-foundation": "^7.4|^8.0",
+                "symfony/ldap": "^7.4|^8.0",
+                "symfony/property-access": "^7.4|^8.0",
+                "symfony/string": "^7.4|^8.0",
+                "symfony/translation": "^7.4|^8.0",
+                "symfony/validator": "^7.4|^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Security\\Core\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Security Component - Core Library",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/security-core/tree/v8.1.11"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-11-01T19:30:44+00:00"
+        },
+        {
+            "name": "symfony/security-csrf",
+            "version": "v8.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/security-csrf.git",
+                "reference": "c865a8ee0d30b14545d7e5349b8e443f4fa9dc3f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/security-csrf/zipball/c865a8ee0d30b14545d7e5349b8e443f4fa9dc3f",
+                "reference": "c865a8ee0d30b14545d7e5349b8e443f4fa9dc3f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.4.1",
+                "symfony/deprecation-contracts": "^2.5|^3",
+                "symfony/security-core": "^7.4|^8.0"
+            },
+            "require-dev": {
+                "psr/log": "^1|^2|^3",
+                "symfony/http-foundation": "^7.4|^8.0",
+                "symfony/http-kernel": "^7.4|^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Security\\Csrf\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Security Component - CSRF Library",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/security-csrf/tree/v8.1.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-05-29T05:06:50+00:00"
         },
         {
             "name": "symfony/serializer",

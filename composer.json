@@ -34,6 +34,7 @@
         "symfony/mcp-bundle": "dev-main as 1.0.0-BETA2",
         "symfony/monolog-bundle": "^4.1",
         "symfony/runtime": "8.1.*",
+        "symfony/security-csrf": "8.1.*",
         "symfony/serializer": "8.1.*",
         "symfony/stimulus-bundle": "^3.6",
         "symfony/twig-bundle": "8.1.*",

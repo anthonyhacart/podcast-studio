@@ -16,44 +16,61 @@ Found while building this project:
 - [symfony/ai#2894](https://github.com/symfony/ai/pull/2894): the Postgres store's hybrid query no longer drops documents that share no keyword with the query (merged).
 - [symfony/ai#2966](https://github.com/symfony/ai/pull/2966): Mistral's moderation models in the Mistral bridge (open).
 
-## Run it
+## Install
 
-### With the Symfony CLI
+Two ways to run it. Both end with a first episode you can listen to **without any API key**: it is replayed from recorded API responses.
 
-Requirements: PHP 8.4+ (`pdo_pgsql`), Composer, the [Symfony CLI](https://symfony.com/download), Docker for Postgres.
+### The short way: Docker only
+
+You need [Docker](https://docs.docker.com/get-docker/) and `make`. Nothing else: PHP, Composer and Postgres run in containers.
+
+```bash
+git clone https://github.com/anthonyhacart/podcast-studio.git && cd podcast-studio
+make install   # builds the image, installs the dependencies, creates the database (a few minutes the first time)
+make demo      # makes the first episode from recorded API responses
+```
+
+Open http://localhost:8002: the episode is there, with its transcript, chapters and sources.
+
+`make` alone lists the other commands; `make down` stops everything.
+
+### With PHP on your machine: the Symfony CLI
+
+You need PHP 8.4 or later with the `pdo_pgsql` extension, [Composer](https://getcomposer.org), the [Symfony CLI](https://symfony.com/download), and Docker for the database only.
 
 ```bash
 git clone https://github.com/anthonyhacart/podcast-studio.git && cd podcast-studio
 composer install
-docker compose up -d database           # Postgres + pgvector: the Symfony CLI exposes its DATABASE_URL
-symfony console ai:store:setup archive  # the table of the show's memory
-symfony serve -d
+docker compose up -d database           # Postgres with pgvector, on port 54433
+symfony console ai:store:setup archive  # creates the table of the show's memory
+symfony serve -d                        # the app, on http://127.0.0.1:8000
 
-# an episode replayed from recorded API responses: no API key needed
+# the first episode, from recorded API responses
 CASSETTE=fixtures/cassettes/worlds-2026.json symfony console app:episode fixtures/briefs/worlds-2026.json
 symfony open:local
 ```
 
-With Colima instead of Docker Desktop, export `DOCKER_HOST=unix://$HOME/.colima/default/docker.sock` so the Symfony CLI finds the database.
+### Make your own episodes: add the keys
 
-### With Docker only
-
-```bash
-make install   # FrankenPHP + Postgres
-make demo      # the same replayed episode
-```
-
-Open http://localhost:8002.
-
-### Live
-
-Put a [Mistral](https://console.mistral.ai/) key in `.env.local` (never committed), then connect an MCP client or open `/studio`.
+Create a file named `.env.local` at the root of the project (it is never committed):
 
 ```dotenv
 MISTRAL_API_KEY=
-# optional: lets the hosts search the web for their sources in /studio (the free plan is enough)
 TAVILY_API_KEY=
 ```
+
+| Key | Needed for | Where to get it |
+| --- | --- | --- |
+| `MISTRAL_API_KEY` | Everything the hosts do: writing, voices, listening to questions, memory | [console.mistral.ai](https://console.mistral.ai/) |
+| `TAVILY_API_KEY` | Optional: lets the hosts search the web for their sources in `/studio` | [tavily.com](https://tavily.com), the free plan is enough |
+
+No restart is needed. Then make an episode [from an MCP client](#use-it-from-an-mcp-client) or [from the browser](#or-from-the-browser).
+
+### If something goes wrong
+
+- **A port is taken**: change `HTTP_PORT` or `POSTGRES_PORT` in `.env`, and the port in `DATABASE_URL` with it.
+- **A database error**: check that the database runs (`docker compose ps`), then create its table again with `make db` (Docker only) or `symfony console ai:store:setup archive`.
+- **Anything else**: the reason is in `var/log/dev.log`, and in the profiler at `/_profiler`.
 
 ## Use it from an MCP client
 
@@ -124,7 +141,7 @@ The project stops early on purpose: one show, two hosts, short episodes, and no 
 | Store, Postgres bridge | The show's memory: a vectorizer, an indexer with a custom loader, pgvector |
 | Platform test replay | Cassettes: the demo and the end-to-end tests run without a key |
 
-Also: Symfony UX Toolkit (Bootstrap kit), Stimulus (microphone, chapters), AssetMapper, Clock, Uid, Serializer, Validator (`#[MapUploadedFile]`), Form, and to read the pages given as sources, HttpClient (`NoPrivateNetworkHttpClient`: a link never reaches the private network) and DomCrawler.
+Also: Symfony UX Toolkit (Bootstrap kit), Stimulus (microphone, chapters), AssetMapper, Clock, Uid, Serializer, Validator (`#[MapUploadedFile]`), Form (with CSRF protection), and to read the pages given as sources, HttpClient (`NoPrivateNetworkHttpClient`: a link never reaches the private network) and DomCrawler.
 
 ## Quality
 

@@ -49,8 +49,8 @@
             <twig:Button type="submit" color="secondary" outline data-turbo-submits-with="The hosts are rewriting…">Rewrite the script</twig:Button>
         {{ form_end(form) }}
 
-        <form class="mt-4" method="post" action="{{ path('app_studio_publish', {id: id}) }}">
+        {{ form_start(publish, {attr: {class: 'mt-4'}}) }}
             <twig:Button type="submit" color="danger" size="lg" data-turbo-submits-with="The hosts are recording…">Record and publish</twig:Button>
-        </form>
+        {{ form_end(publish) }}
     </main>
 {% endblock %}

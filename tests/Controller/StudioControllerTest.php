@@ -165,7 +165,19 @@ final class StudioControllerTest extends WebTestCase
         self::assertSelectorTextContains('h1', 'Episode');
         self::assertSelectorTextContains('.script h2', 'The format');
         self::assertSelectorTextContains('#source-1', 'Format');
-        self::assertSelectorExists('form[action="/studio/'.self::ID.'/publish"]');
+        self::assertSelectorExists('form[action="/studio/'.self::ID.'/publish"] input[name="publish[_token]"]');
+    }
+
+    public function testDoesNotRecordForARequestComingFromAnotherSite(): void
+    {
+        $this->draft();
+
+        $this->client->request('GET', '/studio/'.self::ID);
+        $this->client->submitForm('Record and publish', serverParameters: ['HTTP_SEC_FETCH_SITE' => 'cross-site']);
+
+        self::assertResponseRedirects('/studio/'.self::ID);
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.alert-danger', 'The episode was not recorded, try again.');
     }
 
     public function testAnUnknownDraftIsNotFound(): void
