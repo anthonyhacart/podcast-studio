@@ -2,11 +2,11 @@
 
 # Podcast Studio
 
-> Ask your AI assistant for a podcast episode on anything. It gathers the sources, two AI hosts write a sourced dialogue, you review the script in the conversation, and the voiced episode lands in a real podcast feed. Listeners ask the hosts questions by voice; the hosts remember what they said. No assistant? Do it in the browser, where the hosts can search the web themselves.
+> Ask your AI assistant for a podcast episode on anything. It gathers the sources, two AI hosts write a sourced dialogue, you review the script in the conversation, and the voiced episode lands in a real podcast feed. Six hosts, each with a voice of their own, to pick the two from. Listeners ask the hosts questions by voice; the hosts remember what they said. No assistant? Do it in the browser, where the hosts can search the web themselves.
 
 Built for the [Symfony AI & MCP Hackathon](https://symfony.com/hackathon) (November 2026). The whole show runs on [Mistral](https://mistral.ai): one API key writes, voices, listens and remembers. A second, optional key ([Tavily](https://tavily.com)) lets the hosts search the web.
 
-🎬 **Demo video (90 s)**: https://youtu.be/JmGE-XR2vaU
+🎬 **Demo video (90 s)**: https://youtu.be/nUSe8Ol_-1w
 
 🎧 **Try it online**: https://podcast.hacart.fr, a public demo that stays up for the hackathon. Listen, record a question for the hosts, or [make an episode in the browser](https://podcast.hacart.fr/studio): that demo allows each visitor two a day.
 
@@ -90,7 +90,7 @@ claude mcp add --transport http podcast-studio http://127.0.0.1:8000/mcp   # Cla
 
 Claude Desktop speaks STDIO: run `bin/console mcp:server` with `APP_DEBUG=0` (with Docker only: `docker compose exec -T -e APP_DEBUG=0 php php bin/console mcp:server`).
 
-Then ask: *"Check the listener questions and make a 2-minute episode about the Worlds final. Look for reliable sources first."* Read the script, ask for changes, approve, listen.
+Then ask: *"Check the listener questions and make a 2-minute episode about the Worlds final. Look for reliable sources first."* Read the script, ask for changes, approve, listen. Want other voices? *"…with Oliver and Marie as hosts."*
 
 ## Or from the browser
 
@@ -111,7 +111,7 @@ The same `Studio` service runs behind the MCP tools and behind these pages; the 
 - **A researcher agent**, for an editor who brings no source: it searches the web and picks up to five pages. It only chooses: a pick the search did not return is dropped, and the writer gets the text of the pages, read by the server, not a summary by a model.
 - **The show remembers.** Published lines are embedded into pgvector. The writer has its own tool, `search_past_episodes`, and decides what to look up, so the hosts refer back instead of repeating themselves.
 - **Listeners have a voice.** A question recorded on the page is transcribed and waits for an episode; a host reads it out with the listener's name.
-- **A cast to choose from.** Paul and Jane host by default; four other hosts wait in `config/services.yaml`, each with a persona and voices, and an episode takes any two of them.
+- **A cast to choose from.** Paul and Jane host by default. Four other hosts wait in `config/services.yaml`, and an episode takes any two of the six: Oliver the storyteller and Marie the curious one, with a voice per emotion like Paul and Jane, and Harriet the fact-checker and Howard the old-school broadcaster, who keep one voice, their character being in the persona. The writer only knows the two hosts of the episode, and a script where one of them stays silent is sent back.
 - **Voices per emotion.** Each line is voiced with the host's voice for its emotion, all lines at once, then joined in PHP (no ffmpeg). When the voice service's moderation refuses a line, the writer rephrases that line only.
 - **Podcast-ready.** RSS feed with transcript (VTT) and chapters (Podcasting 2.0).
 

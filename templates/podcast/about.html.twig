@@ -9,6 +9,8 @@
 
         <p class="lead">Two AI hosts, Paul and Jane, make each episode with an editor: you, through your AI assistant.</p>
 
+        <p>Paul and Jane are the usual duo. Four other hosts can take their place, each with a character and a voice of their own: {{ show.hosts|filter((host, id) => id not in show.cast)|map(host => host.name)|join(', ', ' and ') }}. An episode takes any two.</p>
+
         <ol class="mb-4">
             <li class="mb-2"><strong>You ask your assistant for an episode.</strong> It searches the sources itself, and checks the questions listeners recorded on this page.</li>
             <li class="mb-2"><strong>A writer agent drafts the script</strong> from those sources only, citing them line by line, with chapters and a summary. It looks up what the hosts said in past episodes, so they refer back instead of repeating themselves.</li>
