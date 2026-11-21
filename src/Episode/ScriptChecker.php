@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Episode;
 
+use App\Show\Host;
 use App\Show\Show;
 
 /**
@@ -69,6 +70,10 @@ final readonly class ScriptChecker
             }
             $cited = $cited || [] !== $line->sources;
             $words += str_word_count($line->text);
+        }
+
+        if ([] !== $silent = array_diff_key($cast, array_flip(array_map(static fn (Line $line) => $line->host, $script->lines)))) {
+            $problems[] = \sprintf('%s never speaks: the episode is a dialogue between its two hosts.', implode(' and ', array_map(static fn (Host $host) => $host->name, $silent)));
         }
 
         $chapters = \count(array_filter($script->lines, static fn (Line $line) => null !== $line->chapter));

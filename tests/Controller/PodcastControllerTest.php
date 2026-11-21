@@ -42,7 +42,7 @@ final class PodcastControllerTest extends WebTestCase
         $this->client->request('GET', '/');
 
         self::assertSelectorTextContains('.episode .card-title', 'Worlds, the knockouts');
-        self::assertSelectorTextContains('.episode .card-subtitle', '4 November 2026');
+        self::assertSelectorTextContains('.episode .card-subtitle', '4 November 2026 · with Paul and Jane');
         self::assertSelectorTextContains('.episode .card-subtitle .badge', '2:05');
         self::assertSelectorTextContains('#transcript-'.self::ID.'-collapse', 'Paul');
         self::assertSelectorExists('audio[src="/episodes/'.self::ID.'.mp3"]');

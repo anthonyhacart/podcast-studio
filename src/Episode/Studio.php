@@ -5,10 +5,16 @@ declare(strict_types=1);
 namespace App\Episode;
 
 use App\Mailbox\Mailbox;
+use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
+use Symfony\AI\Agent\Exception\ExceptionInterface as AgentException;
+use Symfony\AI\Platform\Exception\ExceptionInterface as PlatformException;
 use Symfony\AI\Store\IndexerInterface;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Lock\LockFactory;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Throwable;
 
 /**
  * The editorial workflow: draft a script from a brief, revise it on request, publish it
@@ -26,24 +32,44 @@ final readonly class Studio
         #[Target('archive')] private IndexerInterface $archive,
         private Mailbox $mailbox,
         private LockFactory $locks,
+        private ValidatorInterface $validator,
+        private LoggerInterface $logger,
     ) {
     }
 
     /**
      * @return array{string, Script} the new episode id and its draft script
+     *
+     * @throws InvalidArgumentException         when the brief breaks one of its own rules (Brief, Source)
+     * @throws InvalidScriptException
+     * @throws AgentException|PlatformException
      */
     public function draft(Brief $brief): array
     {
+        // a brief comes from an MCP client or a file as well as from the form: checked here, for all of them
+        foreach ($this->validator->validate($brief) as $violation) {
+            throw new InvalidArgumentException(\sprintf('The brief is not valid (%s): %s', $violation->getPropertyPath(), $violation->getMessage()));
+        }
+
+        $script = $this->writer->write($brief);
         $id = $this->episodes->nextId();
         $this->episodes->saveBrief($id, $brief);
-        $script = $this->writer->write($brief);
         $this->episodes->saveScript($id, $script);
 
         return [$id, $script];
     }
 
+    /**
+     * @throws AlreadyPublishedException
+     * @throws InvalidScriptException
+     * @throws AgentException|PlatformException
+     */
     public function revise(string $id, string $instructions): Script
     {
+        if ($this->episodes->isPublished($id)) {
+            throw new AlreadyPublishedException($id);
+        }
+
         $script = $this->writer->revise($this->episodes->brief($id), $this->episodes->script($id), $instructions);
         $this->episodes->saveScript($id, $script);
 
@@ -53,6 +79,10 @@ final readonly class Studio
     /**
      * When the voice service refuses a line (its moderation flags lines on any topic,
      * sometimes wrongly), the writer rephrases that line and the episode is voiced again, once.
+     *
+     * @throws AlreadyPublishingException|AlreadyPublishedException when it is being published, or already is
+     * @throws UnspeakableLineException|InvalidScriptException      when a line is refused again, or its rewrite breaks the rules
+     * @throws AgentException|PlatformException                     when the writer or the voices cannot be reached
      */
     public function publish(string $id): Published
     {
@@ -62,6 +92,11 @@ final readonly class Studio
         }
 
         try {
+            // checked under the lock: a second request waits for neither the voices nor the bill
+            if ($this->episodes->isPublished($id)) {
+                throw new AlreadyPublishedException($id);
+            }
+
             return $this->voiceAndPublish($id);
         } finally {
             $lock->release();
@@ -88,8 +123,13 @@ final readonly class Studio
         [$mp3, $timings] = $this->joiner->join($clips);
         $episode = new Published($id, $script->title, [] === $timings ? 0.0 : $timings[array_key_last($timings)][1], $this->clock->now(), $rephrased, Chapter::fromScript($script, $timings));
         $this->episodes->savePublished($id, $episode, $mp3, $this->transcript->vtt($script, $timings));
-        $this->archive->index($id);
         $this->mailbox->remove($this->episodes->brief($id)->questions);
+        try {
+            $this->archive->index($id);
+        } catch (Throwable $e) {
+            // the episode is out: a memory that cannot be reached must not make it look like a failure
+            $this->logger->error('Episode {id} is published but not in the show\'s memory: rebuild it with "ai:store:index archive".', ['id' => $id, 'exception' => $e]);
+        }
 
         return $episode;
     }

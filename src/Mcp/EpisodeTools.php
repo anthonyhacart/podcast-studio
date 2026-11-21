@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Mcp;
 
 use App\Archive\PastEpisodes;
+use App\Episode\AlreadyPublishedException;
 use App\Episode\AlreadyPublishingException;
 use App\Episode\Brief;
 use App\Episode\InvalidScriptException;
@@ -52,7 +53,7 @@ final readonly class EpisodeTools
             'properties' => [
                 'title' => ['type' => 'string'],
                 'notes' => ['type' => 'string', 'description' => 'the facts from this source, as plain text'],
-                'url' => ['type' => 'string'],
+                'url' => ['type' => 'string', 'format' => 'uri', 'description' => 'the page, when there is one: an http or https link'],
             ],
             'required' => ['title', 'notes'],
         ])]
@@ -87,7 +88,7 @@ final readonly class EpisodeTools
      * @return array<string, mixed>
      */
     #[McpTool(name: 'revise_episode', description: 'Rewrite the script of a draft episode following the editor\'s instructions (cut, shorten, change the tone, fix a fact).')]
-    public function revise(string $id, string $instructions): array
+    public function revise(string $id, #[Schema(maxLength: 1000)] string $instructions): array
     {
         return $this->tell(fn () => $this->review($id, $this->studio->revise($id, $instructions)));
     }
@@ -148,7 +149,7 @@ final readonly class EpisodeTools
     {
         try {
             return $action();
-        } catch (InvalidArgumentException|InvalidScriptException|UnspeakableLineException|AlreadyPublishingException $e) {
+        } catch (InvalidArgumentException|InvalidScriptException|UnspeakableLineException|AlreadyPublishingException|AlreadyPublishedException $e) {
             throw new ToolCallException($e->getMessage(), previous: $e);
         }
     }

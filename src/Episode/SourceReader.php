@@ -34,6 +34,11 @@ final readonly class SourceReader
         try {
             $response = $this->client->request('GET', $url);
             $type = $response->getHeaders()['content-type'][0] ?? 'text/html';
+            if (!str_starts_with($type, 'text/')) {
+                $response->cancel();
+
+                throw new UnreadableSourceException($url, 'it is not a web page');
+            }
             $body = '';
             foreach ($this->client->stream($response) as $chunk) {
                 $body .= $chunk->getContent();
@@ -46,10 +51,6 @@ final readonly class SourceReader
             throw new UnreadableSourceException($url, \sprintf('the site answered with an error %d', $e->getResponse()->getStatusCode()), $e);
         } catch (ExceptionInterface $e) {
             throw new UnreadableSourceException($url, 'the site could not be reached', $e);
-        }
-
-        if (!str_starts_with($type, 'text/')) {
-            throw new UnreadableSourceException($url, 'it is not a web page');
         }
 
         [$title, $text] = str_contains($type, 'html') ? $this->page($body, $type, $url) : [null, trim($body)];

@@ -6,9 +6,9 @@
     <main class="container py-5" style="max-width: 48rem">
         <p><a href="{{ path('app_home') }}">← {{ show.title }}</a></p>
         <h1 class="display-6 fw-bold mb-3">New episode</h1>
-        <p class="lead text-body-secondary mb-4">Bring the topic and the sources: Paul and Jane write the script, you review it before they record.</p>
+        <p class="lead text-body-secondary mb-4">Bring the topic and the sources: two hosts write the script, you review it before they record.</p>
 
-        {{ form_start(form, {attr: {'data-controller': 'sources'}}) }}
+        {{ form_start(form, {attr: {'data-controller': 'sources', 'data-sources-message-value': constant('App\\Episode\\NewEpisode::NO_SOURCE')}}) }}
             {{ form_widget(form) }}
             <twig:Button type="submit" data-turbo-submits-with="The hosts are writing…">Write the script</twig:Button>
         {{ form_end(form) }}

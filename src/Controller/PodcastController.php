@@ -22,8 +22,6 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class PodcastController extends AbstractController
 {
-    private const ID = '\d{8}-\d{6}-[0-9a-f]{4}';
-
     public function __construct(
         private readonly EpisodeRepository $episodes,
         private readonly Show $show,
@@ -52,7 +50,7 @@ final class PodcastController extends AbstractController
         return $response;
     }
 
-    #[Route('/episodes/{id}.mp3', name: 'app_episode_audio', requirements: ['id' => self::ID], methods: ['GET', 'HEAD'])]
+    #[Route('/episodes/{id}.mp3', name: 'app_episode_audio', requirements: ['id' => EpisodeRepository::ID], methods: ['GET', 'HEAD'])]
     public function audio(string $id): BinaryFileResponse
     {
         // BinaryFileResponse answers Range requests: podcast apps need them to seek
@@ -62,7 +60,7 @@ final class PodcastController extends AbstractController
         return $response;
     }
 
-    #[Route('/episodes/{id}.vtt', name: 'app_episode_transcript', requirements: ['id' => self::ID], methods: ['GET'])]
+    #[Route('/episodes/{id}.vtt', name: 'app_episode_transcript', requirements: ['id' => EpisodeRepository::ID], methods: ['GET'])]
     public function transcript(string $id): BinaryFileResponse
     {
         $response = new BinaryFileResponse($this->published(fn () => $this->episodes->transcriptPath($id)));
@@ -74,7 +72,7 @@ final class PodcastController extends AbstractController
     /**
      * Podcasting 2.0 chapters, for podcast apps.
      */
-    #[Route('/episodes/{id}.chapters.json', name: 'app_episode_chapters', requirements: ['id' => self::ID], methods: ['GET'], format: 'json')]
+    #[Route('/episodes/{id}.chapters.json', name: 'app_episode_chapters', requirements: ['id' => EpisodeRepository::ID], methods: ['GET'], format: 'json')]
     public function chapters(string $id): JsonResponse
     {
         $episode = $this->published(fn () => $this->episodes->episode($id));

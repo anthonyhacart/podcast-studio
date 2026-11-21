@@ -46,7 +46,7 @@ final class QuestionController extends AbstractController
             return $this->json(['error' => 'The hosts heard nothing. Is your microphone on?'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $question = $this->mailbox->post($text, '' === trim((string) $form->name) ? null : trim((string) $form->name));
+        $question = $this->mailbox->post($text, $form->name());
 
         return $this->json(['question' => $question->text], Response::HTTP_CREATED);
     }

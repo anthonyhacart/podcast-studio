@@ -28,7 +28,7 @@
         <twig:Card id="ask" class="mb-5 shadow-sm">
             <twig:Card:Body data-controller="recorder" data-recorder-url-value="{{ path('app_question_ask') }}">
                 <twig:Card:Title tag="h2" class="h5">Ask the hosts</twig:Card:Title>
-                <p class="text-body-secondary">Record a question: Paul and Jane may answer it in a coming episode.</p>
+                <p class="text-body-secondary">Record a question: the hosts may answer it in a coming episode.</p>
                 <div class="input-group">
                     <input class="form-control" data-recorder-target="name" maxlength="40" placeholder="Your first name (optional)" aria-label="Your first name">
                     <twig:Button color="danger" data-recorder-target="button" data-action="recorder#toggle">Record a question</twig:Button>
@@ -55,7 +55,7 @@
                 <twig:Card:Body data-controller="player">
                     <twig:Card:Title tag="h3" class="h4">{{ episode.title }}</twig:Card:Title>
                     <twig:Card:Subtitle class="mb-3 text-body-secondary">
-                        {{ episode.publishedAt|date('j F Y') }} · with {{ show.cast(item.brief.hosts)|map(host => host.name)|join(' and ') }}
+                        {{ episode.publishedAt|date('j F Y') }} · with {{ (item.brief.hosts ?: show.cast)|map(id => show.hosts[id].name ?? id)|join(' and ') }}
                         <twig:Badge color="secondary" pill class="ms-2">{{ episode.duration }}</twig:Badge>
                         {% if latest %}<twig:Badge pill class="ms-1">Latest</twig:Badge>{% endif %}
                     </twig:Card:Subtitle>

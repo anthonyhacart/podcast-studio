@@ -11,6 +11,7 @@ mcp:
                 3. Call draft_episode, then show the script to the user. Before that, compare each line with your sources and point out any claim they do not state.
                 4. Call revise_episode with the fixes and the user's changes, as many times as needed.
                 5. Call publish_episode only once the user approves the script.
+                Paul and Jane host the show. It has other hosts: when the user names two, pass their ids as hosts to draft_episode; a wrong id is answered with the list.
             registry: 'App\Mcp\'
             http:
                 path: /mcp

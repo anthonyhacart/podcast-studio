@@ -49,8 +49,16 @@ final class ScriptCheckerTest extends TestCase
 
         $problems = $this->checker->check(Fixtures::script(), $brief);
 
-        self::assertCount(5, $problems);
         self::assertSame('Line 1: unknown host "paul" (hosts: oliver, jane).', $problems[0]);
+        self::assertContains('Oliver never speaks: the episode is a dialogue between its two hosts.', $problems);
+    }
+
+    public function testADialogueNeedsBothHosts(): void
+    {
+        $script = Fixtures::script();
+        $lines = array_map(static fn (Line $line) => new Line('paul', $line->emotion, $line->text, $line->sources, $line->chapter), $script->lines);
+
+        self::assertSame(['Jane never speaks: the episode is a dialogue between its two hosts.'], $this->checker->check(new Script('Episode', $lines, $script->summary), Fixtures::brief()));
     }
 
     public function testRequiresAtLeastOneCitedSource(): void

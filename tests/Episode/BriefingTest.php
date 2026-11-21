@@ -44,6 +44,13 @@ final class BriefingTest extends TestCase
         self::assertSame([$question], $brief->questions);
     }
 
+    public function testKeepsTheTwoHostsTheEditorChose(): void
+    {
+        $episode = new NewEpisode(topic: 'Worlds 2026', notes: 'T1 are the defending champions.', hosts: ['oliver', 'jane']);
+
+        self::assertSame(['oliver', 'jane'], $this->briefing()->brief($episode)->hosts);
+    }
+
     public function testAddsWhatTheResearcherFoundToTheLinksOfTheEditor(): void
     {
         $episode = new NewEpisode(search: true);

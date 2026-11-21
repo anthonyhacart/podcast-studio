@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Tests\Mcp;
 
 use App\Episode\EpisodeRepository;
+use App\Episode\Published;
 use App\Mailbox\Mailbox;
 use App\Mcp\EpisodeTools;
+use App\Tests\Episode\Fixtures;
+use DateTimeImmutable;
 use Mcp\Exception\ToolCallException;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -94,6 +97,34 @@ final class EpisodeToolsTest extends KernelTestCase
         self::getContainer()->get(EpisodeTools::class)->draft('Worlds', [['title' => 'Format', 'notes' => 'Final on 14 November.']], hosts: ['paul', 'bob']);
     }
 
+    public function testRefusesASourceWhoseLinkIsNotAWebPage(): void
+    {
+        $this->expectException(ToolCallException::class);
+        $this->expectExceptionMessage('The brief is not valid (sources[0].url): "javascript:alert(1)" is not a link to a web page.');
+
+        self::getContainer()->get(EpisodeTools::class)->draft('Worlds', [['title' => 'Format', 'notes' => 'Final on 14 November.', 'url' => 'javascript:alert(1)']]);
+    }
+
+    public function testAPublishedEpisodeIsNotRecordedAgain(): void
+    {
+        $this->published();
+
+        $this->expectException(ToolCallException::class);
+        $this->expectExceptionMessage('Episode "20261104-100000-abcd" is already published. Draft a new episode instead.');
+
+        self::getContainer()->get(EpisodeTools::class)->publish('20261104-100000-abcd');
+    }
+
+    public function testTheScriptOfAPublishedEpisodeNoLongerChanges(): void
+    {
+        $this->published();
+
+        $this->expectException(ToolCallException::class);
+        $this->expectExceptionMessage('is already published');
+
+        self::getContainer()->get(EpisodeTools::class)->revise('20261104-100000-abcd', 'Shorter, please.');
+    }
+
     public function testRefusesToPublishAnEpisodeAlreadyBeingPublished(): void
     {
         $lock = self::getContainer()->get(LockFactory::class)->createLock('publish-20261104-100000-abcd');
@@ -107,5 +138,13 @@ final class EpisodeToolsTest extends KernelTestCase
         } finally {
             $lock->release();
         }
+    }
+
+    private function published(): void
+    {
+        $episodes = self::getContainer()->get(EpisodeRepository::class);
+        $episodes->saveBrief('20261104-100000-abcd', Fixtures::brief());
+        $episodes->saveScript('20261104-100000-abcd', Fixtures::script());
+        $episodes->savePublished('20261104-100000-abcd', new Published('20261104-100000-abcd', 'Worlds, the knockouts', 125.0, new DateTimeImmutable('2026-11-04 10:00')), (string) file_get_contents(Fixtures::PAUSE), "WEBVTT\n");
     }
 }

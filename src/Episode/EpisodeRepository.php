@@ -16,7 +16,8 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 final readonly class EpisodeRepository
 {
-    private const ID = '/^\d{8}-\d{6}-[0-9a-f]{4}$/';
+    /** What an episode id looks like, as a route requirement. */
+    public const ID = '\d{8}-\d{6}-[0-9a-f]{4}';
 
     public function __construct(
         private Filesystem $filesystem,
@@ -134,7 +135,7 @@ final readonly class EpisodeRepository
     private function path(string $id, string $file): string
     {
         // the id comes from the MCP client: never let it reach the filesystem unchecked
-        if (!preg_match(self::ID, $id)) {
+        if (!preg_match('/^'.self::ID.'$/', $id)) {
             throw new InvalidArgumentException(\sprintf('"%s" is not an episode id.', $id));
         }
 

@@ -8,7 +8,7 @@ Built for the [Symfony AI & MCP Hackathon](https://symfony.com/hackathon) (Novem
 
 🎬 **Demo video (90 s)**: https://youtu.be/JmGE-XR2vaU
 
-🎧 **Try it online**: https://podcast.hacart.fr, a public demo that stays up for the hackathon. Listen, record a question for the hosts, or [make an episode in the browser](https://podcast.hacart.fr/studio): two a day for each visitor.
+🎧 **Try it online**: https://podcast.hacart.fr, a public demo that stays up for the hackathon. Listen, record a question for the hosts, or [make an episode in the browser](https://podcast.hacart.fr/studio): that demo allows each visitor two a day.
 
 ## Contributions to Symfony AI
 

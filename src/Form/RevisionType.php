@@ -20,7 +20,8 @@ final class RevisionType extends AbstractType
         $builder->add('instructions', TextareaType::class, [
             'label' => 'What should change?',
             'empty_data' => '',
-            'attr' => ['rows' => 2, 'placeholder' => 'Shorter intro, and Jane should doubt the favourites more'],
+            // a textarea is not guessed from the constraints of Revision: its limit is repeated for the browser
+            'attr' => ['rows' => 2, 'maxlength' => 1000, 'placeholder' => 'Shorter intro, and more doubt about the favourites'],
         ]);
     }
 

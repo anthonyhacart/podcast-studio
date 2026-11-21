@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Episode\AlreadyPublishedException;
 use App\Episode\AlreadyPublishingException;
 use App\Episode\Brief;
 use App\Episode\Briefing;
@@ -39,7 +40,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/studio', name: 'app_studio_')]
 final class StudioController extends AbstractController
 {
-    private const ID = '\d{8}-\d{6}-[0-9a-f]{4}';
     private const UNAVAILABLE = 'The hosts are not available right now. Try again in a moment.';
 
     public function __construct(
@@ -75,7 +75,7 @@ final class StudioController extends AbstractController
         return $this->render('studio/new.html.twig', ['show' => $this->show, 'form' => $form]);
     }
 
-    #[Route('/{id}', name: 'review', requirements: ['id' => self::ID], methods: ['GET', 'POST'])]
+    #[Route('/{id}', name: 'review', requirements: ['id' => EpisodeRepository::ID], methods: ['GET', 'POST'])]
     public function review(string $id, Request $request): Response
     {
         [$brief, $script] = $this->draft($id);
@@ -100,7 +100,7 @@ final class StudioController extends AbstractController
         return $this->render('studio/review.html.twig', ['show' => $this->show, 'brief' => $brief, 'script' => $script, 'form' => $form, 'publish' => $this->publishForm($id)]);
     }
 
-    #[Route('/{id}/publish', name: 'publish', requirements: ['id' => self::ID], methods: ['POST'])]
+    #[Route('/{id}/publish', name: 'publish', requirements: ['id' => EpisodeRepository::ID], methods: ['POST'])]
     public function publish(string $id, Request $request): Response
     {
         $this->draft($id);
@@ -117,12 +117,9 @@ final class StudioController extends AbstractController
 
         try {
             $episode = $this->studio->publish($id);
-        } catch (AlreadyPublishingException|UnspeakableLineException|InvalidScriptException $e) {
-            $this->addFlash('danger', $e->getMessage());
-
-            return $this->redirectToRoute('app_studio_review', ['id' => $id], Response::HTTP_SEE_OTHER);
-        } catch (AgentException|PlatformException) {
-            $this->addFlash('danger', self::UNAVAILABLE);
+        } catch (AlreadyPublishedException|AlreadyPublishingException|UnspeakableLineException|InvalidScriptException|AgentException|PlatformException $e) {
+            // the studio's own refusals say what to do; an outage of the API does not
+            $this->addFlash('danger', $e instanceof AgentException || $e instanceof PlatformException ? self::UNAVAILABLE : $e->getMessage());
 
             return $this->redirectToRoute('app_studio_review', ['id' => $id], Response::HTTP_SEE_OTHER);
         }

@@ -16,4 +16,12 @@ final readonly class AskQuestion
         public ?string $name = null,
     ) {
     }
+
+    /**
+     * The name the listener gave, if any.
+     */
+    public function name(): ?string
+    {
+        return '' === trim((string) $this->name) ? null : trim((string) $this->name);
+    }
 }

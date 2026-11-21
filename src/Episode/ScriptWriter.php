@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\Attribute\Target;
 /**
  * Asks the "writer" agent for a script, checks it, and asks once more with the
  * problems found before giving up. Checking the facts against the sources is the
- * job of the review in the MCP client: it gathered them.
+ * job of the review: the MCP client that gathered them, or the editor in the browser.
  */
 final readonly class ScriptWriter
 {
