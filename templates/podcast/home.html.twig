@@ -5,20 +5,27 @@
 {% block body %}
     <main class="container py-5" style="max-width: 48rem">
         {{ include('_flashes.html.twig') }}
-        <header class="mb-5">
-            <h1 class="display-5 fw-bold">{{ show.title }}</h1>
+        <header class="hero bg-body-tertiary rounded-4 p-4 p-md-5 mb-5">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <img src="{{ asset('images/logo.svg') }}" alt="" width="98" height="56">
+                <h1 class="display-5 fw-bold mb-0">{{ show.title }}</h1>
+            </div>
             <p class="lead text-body-secondary">{{ show.description }} <a href="{{ path('app_about') }}">How it is made</a></p>
-            <div class="input-group" data-controller="clipboard" data-clipboard-source-value="{{ url('app_feed') }}">
+            <div class="actions d-flex flex-wrap gap-2 mb-4">
+                <twig:Button tag="a" href="{{ path('app_studio_new') }}" size="lg">Make an episode</twig:Button>
+                <twig:Button tag="a" href="#ask" outline size="lg">Ask the hosts a question</twig:Button>
+            </div>
+            <div class="input-group input-group-sm" data-controller="clipboard" data-clipboard-source-value="{{ url('app_feed') }}">
                 <span class="input-group-text">Podcast feed</span>
                 <input class="form-control" value="{{ url('app_feed') }}" readonly aria-label="Podcast feed URL">
-                <twig:Button color="primary" data-action="clipboard#copy">
+                <twig:Button color="secondary" outline data-action="clipboard#copy">
                     <span data-clipboard-target="idle">Copy</span>
                     <span data-clipboard-target="success">Copied!</span>
                 </twig:Button>
             </div>
         </header>
 
-        <twig:Card class="mb-5 shadow-sm">
+        <twig:Card id="ask" class="mb-5 shadow-sm">
             <twig:Card:Body data-controller="recorder" data-recorder-url-value="{{ path('app_question_ask') }}">
                 <twig:Card:Title tag="h2" class="h5">Ask the hosts</twig:Card:Title>
                 <p class="text-body-secondary">Record a question: Paul and Jane may answer it in a coming episode.</p>
@@ -38,14 +45,19 @@
             </twig:Card:Body>
         </twig:Card>
 
+        {% if episodes %}
+            <h2 class="h4 mb-3">Episodes</h2>
+        {% endif %}
         {% for item in episodes %}
             {% set episode = item.episode %}
+            {% set latest = loop.first %}
             <twig:Card class="episode mb-4 shadow-sm">
                 <twig:Card:Body data-controller="player">
-                    <twig:Card:Title tag="h2" class="h4">{{ episode.title }}</twig:Card:Title>
+                    <twig:Card:Title tag="h3" class="h4">{{ episode.title }}</twig:Card:Title>
                     <twig:Card:Subtitle class="mb-3 text-body-secondary">
                         {{ episode.publishedAt|date('j F Y') }}
                         <twig:Badge color="secondary" pill class="ms-2">{{ episode.duration }}</twig:Badge>
+                        {% if latest %}<twig:Badge pill class="ms-1">Latest</twig:Badge>{% endif %}
                     </twig:Card:Subtitle>
                     {% if item.script.summary %}
                         <p class="summary">{{ item.script.summary }}</p>
@@ -64,12 +76,12 @@
                     {% endif %}
 
                     <twig:Accordion id="episode-{{ episode.id }}" flush>
-                        <twig:Accordion:Item id="transcript-{{ episode.id }}" label="Transcript" headingTag="h3">
+                        <twig:Accordion:Item id="transcript-{{ episode.id }}" label="Transcript" headingTag="h4">
                             {% for line in item.script.lines %}
                                 <p><strong>{{ show.hosts[line.host].name ?? line.host }}</strong> {{ line.text }}</p>
                             {% endfor %}
                         </twig:Accordion:Item>
-                        <twig:Accordion:Item id="sources-{{ episode.id }}" label="Sources" headingTag="h3">
+                        <twig:Accordion:Item id="sources-{{ episode.id }}" label="Sources" headingTag="h4">
                             {{ include('podcast/_sources.html.twig', {brief: item.brief}) }}
                         </twig:Accordion:Item>
                     </twig:Accordion>
@@ -78,14 +90,14 @@
         {% else %}
             <twig:Card class="text-center">
                 <twig:Card:Body class="empty py-5 text-body-secondary">
-                    No episode yet. Connect your MCP client to <code>{{ url('_mcp_endpoint_default') }}</code> and ask it for one,
-                    or <a href="{{ path('app_studio_new') }}">make one here</a>.
+                    <p>No episode yet. Connect your MCP client to <code>{{ url('_mcp_endpoint_default') }}</code> and ask it for one, or make one here.</p>
+                    <twig:Button tag="a" href="{{ path('app_studio_new') }}">Make the first episode</twig:Button>
                 </twig:Card:Body>
             </twig:Card>
         {% endfor %}
 
         {% if episodes %}
-            <p class="text-center"><a href="{{ path('app_studio_new') }}">Make a new episode</a></p>
+            <p class="text-center"><twig:Button tag="a" href="{{ path('app_studio_new') }}" outline>Make a new episode</twig:Button></p>
         {% endif %}
     </main>
 {% endblock %}

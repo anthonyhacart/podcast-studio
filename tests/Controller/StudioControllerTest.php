@@ -62,7 +62,7 @@ final class StudioControllerTest extends WebTestCase
         ), $brief['sources']));
 
         $this->client->request('GET', '/');
-        $this->client->clickLink('make one here');
+        $this->client->clickLink('Make an episode');
         $this->client->submitForm('Write the script', [
             'new_episode[topic]' => $brief['topic'],
             'new_episode[search]' => false,
