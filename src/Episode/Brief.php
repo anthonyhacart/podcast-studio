@@ -11,6 +11,7 @@ final readonly class Brief
     /**
      * @param list<Source>   $sources
      * @param list<Question> $questions listener questions the episode answers
+     * @param list<string>   $hosts     ids of the two hosts, none for the show's usual duo (Show::cast())
      */
     public function __construct(
         public string $topic,
@@ -18,6 +19,7 @@ final readonly class Brief
         public int $minutes = 2,
         public ?string $tone = null,
         public array $questions = [],
+        public array $hosts = [],
     ) {
     }
 }

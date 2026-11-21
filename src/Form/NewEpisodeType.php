@@ -8,6 +8,8 @@ use App\Episode\NewEpisode;
 use App\Episode\Researcher;
 use App\Mailbox\Mailbox;
 use App\Mailbox\Question;
+use App\Show\Host;
+use App\Show\Show;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -25,6 +27,7 @@ final class NewEpisodeType extends AbstractType
     public function __construct(
         private readonly Mailbox $mailbox,
         private readonly Researcher $researcher,
+        private readonly Show $show,
     ) {
     }
 
@@ -68,7 +71,18 @@ final class NewEpisodeType extends AbstractType
                 'required' => false,
                 'attr' => ['placeholder' => 'fun, for fans who missed the news'],
             ])
+            ->add('hosts', ChoiceType::class, [
+                'help' => 'Two of them make the episode, each with their own voice.',
+                'choices' => $this->show->hosts,
+                'choice_value' => 'id',
+                'choice_label' => static fn (Host $host): string => \sprintf('%s · %s', $host->name, $host->persona),
+                'multiple' => true,
+                'expanded' => true,
+            ])
         ;
+
+        // the form shows hosts, the episode keeps their ids
+        $builder->get('hosts')->addModelTransformer(new CallbackTransformer($this->hosts(...), self::ids(...)));
 
         // one link per line
         $builder->get('links')->addModelTransformer(new CallbackTransformer(self::lines(...), self::links(...)));
@@ -89,6 +103,26 @@ final class NewEpisodeType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(['data_class' => NewEpisode::class]);
+    }
+
+    /**
+     * @param list<string> $ids
+     *
+     * @return list<Host>
+     */
+    private function hosts(array $ids): array
+    {
+        return array_values(array_intersect_key($this->show->hosts, array_flip($ids)));
+    }
+
+    /**
+     * @param array<Host> $hosts
+     *
+     * @return list<string>
+     */
+    private static function ids(array $hosts): array
+    {
+        return array_values(array_map(static fn (Host $host): string => $host->id, $hosts));
     }
 
     /**

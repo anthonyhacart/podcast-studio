@@ -6,6 +6,7 @@ namespace App\Tests\Episode;
 
 use App\Episode\Brief;
 use App\Episode\InvalidScriptException;
+use App\Episode\Line;
 use App\Episode\Script;
 use App\Episode\ScriptChecker;
 use App\Episode\ScriptWriter;
@@ -44,6 +45,21 @@ final class ScriptWriterTest extends TestCase
         $this->writer(Fixtures::script())->write($brief);
 
         self::assertStringEndsWith("Listener questions to answer on air:\n- Marie asks: Who wins the final?\n- A listener asks: Is LYON for real?\n", $this->lastUserText());
+    }
+
+    public function testIntroducesTheTwoHostsOfTheEpisodeOnly(): void
+    {
+        $this->writer(Fixtures::script())->write(Fixtures::brief());
+        self::assertStringContainsString("Hosts:\n- id \"paul\", Paul: The enthusiast. Emotions: neutral, excited.\n- id \"jane\"", $this->lastUserText());
+        self::assertStringNotContainsString('oliver', $this->lastUserText());
+
+        $brief = Fixtures::brief();
+        $script = Fixtures::script();
+        $script = new Script($script->title, array_map(static fn (Line $line) => new Line('paul' === $line->host ? 'oliver' : $line->host, $line->emotion, $line->text, $line->sources, $line->chapter), $script->lines), $script->summary);
+        $this->writer($script)->write(new Brief($brief->topic, $brief->sources, $brief->minutes, hosts: ['oliver', 'jane']));
+
+        self::assertStringContainsString("Hosts:\n- id \"oliver\", Oliver: The storyteller. Emotions: neutral, curious.\n- id \"jane\"", $this->lastUserText());
+        self::assertStringNotContainsString('paul', $this->lastUserText());
     }
 
     public function testAsksNothingOfListenersWithoutQuestions(): void

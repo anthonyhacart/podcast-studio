@@ -30,9 +30,11 @@ final class Fixtures
             'description' => 'A show for tests.',
             'author' => 'Tests',
             'language' => 'en',
+            'cast' => ['paul', 'jane'],
             'hosts' => [
                 'paul' => ['name' => 'Paul', 'persona' => 'The enthusiast.', 'voices' => ['neutral' => 'en_paul_neutral', 'excited' => 'en_paul_excited']],
                 'jane' => ['name' => 'Jane', 'persona' => 'The analyst.', 'voices' => ['neutral' => 'gb_jane_neutral', 'sarcasm' => 'gb_jane_sarcasm']],
+                'oliver' => ['name' => 'Oliver', 'persona' => 'The storyteller.', 'voices' => ['neutral' => 'gb_oliver_neutral', 'curious' => 'gb_oliver_curious']],
             ],
         ]);
     }

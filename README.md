@@ -79,7 +79,7 @@ No restart is needed. Then make an episode [from an MCP client](#use-it-from-an-
 | Tool | What it does |
 | --- | --- |
 | `listener_questions` | Lists the questions listeners recorded on the show's page |
-| `draft_episode` | Writes the script from a topic, the sources the client gathered and, optionally, listener questions |
+| `draft_episode` | Writes the script from a topic, the sources the client gathered and, optionally, listener questions and the two hosts of the episode |
 | `revise_episode` | Rewrites it following the editor's instructions |
 | `publish_episode` | Voices the approved script and publishes it to the feed |
 | `search_episodes` | Searches what the hosts said in past episodes, by meaning |
@@ -96,7 +96,7 @@ Then ask: *"Check the listener questions and make a 2-minute episode about the W
 
 No MCP client? Open http://127.0.0.1:8000/studio (port 8002 with Docker only): you are the editor.
 
-1. **Give a topic**, a length, a tone, and tick the listener questions to answer.
+1. **Give a topic**, a length, a tone, choose the two hosts, and tick the listener questions to answer.
 2. **Choose where the facts come from.** With a `TAVILY_API_KEY`, "Let the hosts search the web for their sources" is ticked: the hosts find up to five pages themselves. Untick it to give your own links, one per line. Either way you can add notes of your own.
 3. **Review the script**, each line next to the sources it cites, and ask for changes until it is right.
 4. **Record and publish**: the episode lands on the home page and in the feed.
@@ -111,6 +111,7 @@ The same `Studio` service runs behind the MCP tools and behind these pages; the 
 - **A researcher agent**, for an editor who brings no source: it searches the web and picks up to five pages. It only chooses: a pick the search did not return is dropped, and the writer gets the text of the pages, read by the server, not a summary by a model.
 - **The show remembers.** Published lines are embedded into pgvector. The writer has its own tool, `search_past_episodes`, and decides what to look up, so the hosts refer back instead of repeating themselves.
 - **Listeners have a voice.** A question recorded on the page is transcribed and waits for an episode; a host reads it out with the listener's name.
+- **A cast to choose from.** Paul and Jane host by default; four other hosts wait in `config/services.yaml`, each with a persona and voices, and an episode takes any two of them.
 - **Voices per emotion.** Each line is voiced with the host's voice for its emotion, all lines at once, then joined in PHP (no ffmpeg). When the voice service's moderation refuses a line, the writer rephrases that line only.
 - **Podcast-ready.** RSS feed with transcript (VTT) and chapters (Podcasting 2.0).
 
@@ -123,7 +124,7 @@ A few choices:
 
 ## A showcase, not a product
 
-The project stops early on purpose: one show, two hosts, short episodes, and no login: anyone who reaches `/studio` or the MCP endpoint can spend your API keys, so run it locally. It is there to show what Symfony AI and MCP make possible in a Symfony app once it can write, speak, listen and remember. The same pieces (an agent with structured output, a voice per character and emotion, a memory, tools an assistant drives) could become:
+The project stops early on purpose: one show, two hosts per episode, short episodes, and no login: anyone who reaches `/studio` or the MCP endpoint can spend your API keys, so run it locally. It is there to show what Symfony AI and MCP make possible in a Symfony app once it can write, speak, listen and remember. The same pieces (an agent with structured output, a voice per character and emotion, a memory, tools an assistant drives) could become:
 
 - **Interactive stories**: each episode ends on a choice, listeners answer by voice, the next episode follows the vote.
 - **A release podcast**: the assistant reads the changelog and the merged pull requests, the hosts tell what changed this week.

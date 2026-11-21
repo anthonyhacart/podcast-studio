@@ -41,11 +41,12 @@ final readonly class ScriptChecker
             return ['The script has no lines.'];
         }
 
+        $cast = $this->show->cast($brief->hosts);
         foreach ($script->lines as $i => $line) {
             $n = $i + 1;
-            $host = $this->show->hosts[$line->host] ?? null;
+            $host = $cast[$line->host] ?? null;
             if (null === $host) {
-                $problems[] = \sprintf('Line %d: unknown host "%s" (hosts: %s).', $n, $line->host, implode(', ', array_keys($this->show->hosts)));
+                $problems[] = \sprintf('Line %d: unknown host "%s" (hosts: %s).', $n, $line->host, implode(', ', array_keys($cast)));
             } elseif (!isset($host->voices[$line->emotion])) {
                 $problems[] = \sprintf('Line %d: %s has no emotion "%s" (emotions: %s).', $n, $host->name, $line->emotion, implode(', ', array_keys($host->voices)));
             }

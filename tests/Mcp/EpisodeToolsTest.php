@@ -86,6 +86,14 @@ final class EpisodeToolsTest extends KernelTestCase
         self::getContainer()->get(EpisodeTools::class)->draft('Worlds', [['title' => 'Format', 'notes' => 'Final on 14 November.']], questions: ['01a1bdf1-396d-7f14-bb1f-e2125edaad26']);
     }
 
+    public function testTellsWhoHostsTheShowWhenAskedForSomeoneElse(): void
+    {
+        $this->expectException(ToolCallException::class);
+        $this->expectExceptionMessage('"bob" is not a host of the show (hosts: paul, jane, oliver, marie, harriet, howard).');
+
+        self::getContainer()->get(EpisodeTools::class)->draft('Worlds', [['title' => 'Format', 'notes' => 'Final on 14 November.']], hosts: ['paul', 'bob']);
+    }
+
     public function testRefusesToPublishAnEpisodeAlreadyBeingPublished(): void
     {
         $lock = self::getContainer()->get(LockFactory::class)->createLock('publish-20261104-100000-abcd');

@@ -38,6 +38,6 @@ final readonly class Briefing
             $sources[] = new Source('Notes from the editor', $episode->notes);
         }
 
-        return new Brief($episode->topic, $sources, $episode->minutes, $episode->tone, $questions);
+        return new Brief($episode->topic, $sources, $episode->minutes, $episode->tone, $questions, $episode->hosts);
     }
 }

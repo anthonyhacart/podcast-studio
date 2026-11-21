@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Episode;
 
+use App\Episode\Brief;
 use App\Episode\Line;
 use App\Episode\Script;
 use App\Episode\ScriptChecker;
@@ -39,6 +40,17 @@ final class ScriptCheckerTest extends TestCase
         self::assertStringContainsString('unknown host "bob"', $problems[0]);
         self::assertStringContainsString('Jane has no emotion "excited"', $problems[1]);
         self::assertStringContainsString('cites source 3', $problems[2]);
+    }
+
+    public function testRejectsAHostWhoIsNotInTheEpisode(): void
+    {
+        $brief = Fixtures::brief();
+        $brief = new Brief($brief->topic, $brief->sources, $brief->minutes, hosts: ['oliver', 'jane']);
+
+        $problems = $this->checker->check(Fixtures::script(), $brief);
+
+        self::assertCount(5, $problems);
+        self::assertSame('Line 1: unknown host "paul" (hosts: oliver, jane).', $problems[0]);
     }
 
     public function testRequiresAtLeastOneCitedSource(): void

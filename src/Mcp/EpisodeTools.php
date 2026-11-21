@@ -40,6 +40,7 @@ final readonly class EpisodeTools
      * @param int                                                     $minutes   target length, 1 to 5
      * @param string|null                                             $tone      e.g. "fun, for fans who missed the news"
      * @param list<string>                                            $questions ids of listener questions (listener_questions) the episode answers
+     * @param list<string>                                            $hosts     ids of the two hosts, when the user asks for others than the show's usual duo; an unknown id is answered with the hosts of the show
      *
      * @return array<string, mixed>
      */
@@ -61,14 +62,17 @@ final readonly class EpisodeTools
         ?string $tone = null,
         #[Schema(items: ['type' => 'string'])]
         array $questions = [],
+        #[Schema(items: ['type' => 'string'])]
+        array $hosts = [],
     ): array {
-        return $this->tell(function () use ($topic, $sources, $minutes, $tone, $questions) {
+        return $this->tell(function () use ($topic, $sources, $minutes, $tone, $questions, $hosts) {
             $brief = new Brief(
                 $topic,
                 array_map(static fn (array $s) => new Source($s['title'], $s['notes'], $s['url'] ?? null), $sources),
                 $minutes,
                 $tone,
                 array_map($this->mailbox->question(...), $questions),
+                array_keys($this->show->cast($hosts)),
             );
             [$id, $script] = $this->studio->draft($brief);
 

@@ -55,7 +55,7 @@ final class StudioController extends AbstractController
     public function new(Request $request): Response
     {
         // the hosts search for their sources unless the editor unticks it
-        $episode = new NewEpisode(search: $this->researcher->isAvailable());
+        $episode = new NewEpisode(search: $this->researcher->isAvailable(), hosts: $this->show->cast);
         $form = $this->createForm(NewEpisodeType::class, $episode)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

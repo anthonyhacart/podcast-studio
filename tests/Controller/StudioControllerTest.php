@@ -89,6 +89,26 @@ final class StudioControllerTest extends WebTestCase
         self::assertSelectorExists('.episode audio');
     }
 
+    public function testOffersTheHostsOfTheShowWithItsUsualDuoTicked(): void
+    {
+        $this->client->request('GET', '/studio');
+
+        self::assertSelectorCount(6, '#new_episode_hosts input[type=checkbox]');
+        self::assertSelectorCount(2, '#new_episode_hosts input[checked]');
+        self::assertSelectorExists('#new_episode_hosts input[value=paul][checked]');
+        self::assertSelectorExists('#new_episode_hosts input[value=jane][checked]');
+        self::assertSelectorTextContains('#new_episode_hosts', 'Oliver · The storyteller.');
+    }
+
+    public function testAnEpisodeHasTwoHosts(): void
+    {
+        $this->client->request('GET', '/studio');
+        $this->client->submitForm('Write the script', ['new_episode[topic]' => 'Worlds 2026', 'new_episode[notes]' => 'T1 are the defending champions.', 'new_episode[hosts]' => ['paul', 'jane', 'oliver']]);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.invalid-feedback', 'An episode is a dialogue: choose two hosts.');
+    }
+
     public function testAsksForASource(): void
     {
         $this->client->request('GET', '/studio');

@@ -35,10 +35,13 @@ final class NewEpisode
     public array $questions = [];
 
     /**
-     * @param bool $search whether the hosts search the web for their sources themselves
+     * @param bool         $search whether the hosts search the web for their sources themselves
+     * @param list<string> $hosts  ids of the two hosts of the episode
      */
     public function __construct(
         public bool $search = false,
+        #[Assert\Count(exactly: 2, exactMessage: 'An episode is a dialogue: choose two hosts.')]
+        public array $hosts = [],
     ) {
     }
 

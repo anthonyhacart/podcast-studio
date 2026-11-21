@@ -71,7 +71,7 @@ final readonly class ScriptWriter
     private function request(Brief $brief): string
     {
         $hosts = '';
-        foreach ($this->show->hosts as $host) {
+        foreach ($this->show->cast($brief->hosts) as $host) {
             $hosts .= \sprintf("- id \"%s\", %s: %s Emotions: %s.\n", $host->id, $host->name, $host->persona, implode(', ', array_keys($host->voices)));
         }
 

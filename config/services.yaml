@@ -14,6 +14,8 @@ parameters:
         description: 'Two AI hosts, Paul and Jane, on whatever you ask them about. Every episode is drafted from the sources you bring, reviewed with you in your MCP client, then voiced.'
         author: 'Podcast Studio'
         language: en
+        # who hosts an episode when its editor does not choose
+        cast: [paul, jane]
         hosts:
             paul:
                 name: Paul
@@ -35,6 +37,36 @@ parameters:
                     confident: gb_jane_confident
                     confused: gb_jane_confused
                     sad: gb_jane_sad
+            oliver:
+                name: Oliver
+                persona: 'The storyteller. Unhurried British charm, loves an anecdote and the history behind things.'
+                voices:
+                    neutral: gb_oliver_neutral
+                    curious: gb_oliver_curious
+                    excited: gb_oliver_excited
+                    cheerful: gb_oliver_cheerful
+                    confident: gb_oliver_confident
+                    sad: gb_oliver_sad
+            marie:
+                name: Marie
+                persona: 'The curious one. French, asks the questions listeners have, delighted by odd facts.'
+                voices:
+                    neutral: fr_marie_neutral
+                    curious: fr_marie_curious
+                    excited: fr_marie_excited
+                    happy: fr_marie_happy
+                    sad: fr_marie_sad
+            # one voice, one mood: the character is in the persona
+            harriet:
+                name: Harriet
+                persona: 'The fact-checker. Deadpan, precise, never impressed.'
+                voices:
+                    neutral: voice_590
+            howard:
+                name: Howard
+                persona: 'The old-school broadcaster. Formal and measured, treats every topic like the evening news.'
+                voices:
+                    neutral: voice_3147
 
 services:
     # default configuration for services in *this* file
