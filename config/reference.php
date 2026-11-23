@@ -1080,6 +1080,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         },
  *         mistral?: array{
  *             api_key?: string|Param,
+ *             base_url?: string|Param, // Base URL of the Mistral API, e.g. "https://api.eu.mistral.ai" // Default: "https://api.mistral.ai"
  *             http_client?: string|Param, // Service ID of the HTTP client to use // Default: "http_client"
  *             model_catalog?: Param|string|array{ // Model catalog of the platform, a string is short for the "service" option
  *                 service?: string|Param, // Service ID of a custom model catalog to use instead of the bridge one
@@ -1391,8 +1392,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             entity?: string|Param, // FQCN of the entity with #[Embedding] on a field, or on the class when it is mirrored.
  *             metric?: "cosine"|"euclidean"|"inner_product"|Param, // Metric to use for vector similarity search. // Default: "cosine"
  *             entity_manager?: string|Param, // Service id of the entity manager owning the entity. // Default: "doctrine.orm.entity_manager"
- *             vectorizer?: string|Param, // Service id of the vectorizer embedding the entities on flush and through "ai:store:index". // Default: null
- *             mirror_to?: string|Param, // Service id of the store to mirror the entity into, needs a "vectorizer" and #[Embedding] on the entity class. // Default: null
+ *             vectorizer?: string|Param, // Service id of the vectorizer embedding the entities on flush and through "ai:store:index", null turns embedding off. // Default: null
+ *             mirror_to?: string|Param, // Service id of the store to mirror the entity into, needs a "vectorizer" and #[Embedding] on the entity class, null turns mirroring off. // Default: null
  *         }>,
  *         elasticsearch?: array<string, array{ // Default: []
  *             endpoint?: string|Param,
