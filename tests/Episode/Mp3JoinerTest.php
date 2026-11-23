@@ -68,6 +68,19 @@ final class Mp3JoinerTest extends TestCase
         self::assertSame(0xFFE0, ((\ord($mp3[208]) << 8) | \ord($mp3[209])) & 0xFFE0, 'the audio follows');
     }
 
+    public function testClipsAt24kHzGetThePauseAt24kHz(): void
+    {
+        // VoiceStudio's MP3s are 24,000 Hz: a 22,050 Hz pause between them would not play right
+        $joiner = new Mp3Joiner(new Filesystem(), self::PAUSE);
+        $clip = (string) file_get_contents(\dirname(self::PAUSE).'/pause-24000.mp3');
+
+        [$mp3, $timings] = $joiner->join([$clip, $clip]);
+
+        // MPEG 2, 24,000 Hz: sample rate index 1 in every frame, the header frame included
+        self::assertSame(1, (\ord($mp3[2]) >> 2) & 3);
+        self::assertEqualsWithDelta(3 * $timings[0][1], $timings[1][1], 0.001, 'the pause is as long as a clip');
+    }
+
     public function testJoiningNothingGivesNothing(): void
     {
         self::assertSame(['', []], new Mp3Joiner(new Filesystem(), self::PAUSE)->join([]));

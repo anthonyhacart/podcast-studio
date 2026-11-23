@@ -11,7 +11,8 @@ use Symfony\Component\Filesystem\Filesystem;
 /**
  * Joins MP3 clips by concatenating their MPEG frames, with a short pause between
  * clips, behind a header frame that tells players the real length; no ffmpeg needed.
- * Clips must share a sample rate (Voxtral: 22,050 Hz mono).
+ * Clips must share a sample rate (Voxtral: 22,050 Hz mono, VoiceStudio: 24,000 Hz); the pause
+ * is resources/audio/pause.mp3, or pause-24000.mp3 next to it for clips at another rate.
  */
 final readonly class Mp3Joiner
 {
@@ -34,13 +35,13 @@ final readonly class Mp3Joiner
      */
     public function join(array $clips): array
     {
-        [$pause, $pauseSeconds, $pauseSizes] = $this->frames($this->filesystem->readFile($this->pausePath));
+        $clips = array_map($this->frames(...), $clips);
+        [$pause, $pauseSeconds, $pauseSizes] = $this->frames($this->filesystem->readFile($this->pausePathFor($clips[0][0] ?? '')));
         $mp3 = '';
         $sizes = [];
         $timings = [];
         $seconds = 0.0;
-        foreach ($clips as $i => $clip) {
-            [$frames, $duration, $clipSizes] = $this->frames($clip);
+        foreach ($clips as $i => [$frames, $duration, $clipSizes]) {
             if ($i > 0) {
                 $mp3 .= $pause;
                 $sizes = [...$sizes, ...$pauseSizes];
@@ -52,6 +53,23 @@ final readonly class Mp3Joiner
         }
 
         return [$this->xingFrame($mp3, $sizes).$mp3, $timings];
+    }
+
+    /**
+     * The pause at the sample rate of the clips, whose first frame is given: pause-<rate>.mp3
+     * next to the default pause, or the default pause when there is none.
+     */
+    private function pausePathFor(string $frames): string
+    {
+        if (\strlen($frames) < 4) {
+            return $this->pausePath;
+        }
+
+        $header = (\ord($frames[1]) << 16) | (\ord($frames[2]) << 8);
+        $rate = self::SAMPLE_RATES[($header >> 19) & 3][($header >> 10) & 3] ?? null;
+        $path = \sprintf('%s/pause-%d.mp3', \dirname($this->pausePath), $rate);
+
+        return null !== $rate && $this->filesystem->exists($path) ? $path : $this->pausePath;
     }
 
     /**

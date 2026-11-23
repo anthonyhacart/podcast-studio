@@ -17,6 +17,7 @@ Found while building this project:
 - [symfony/ai#2873](https://github.com/symfony/ai/pull/2873): Voxtral text to speech in the Mistral bridge (merged).
 - [symfony/ai#2894](https://github.com/symfony/ai/pull/2894): the Postgres store's hybrid query no longer drops documents that share no keyword with the query (merged).
 - [symfony/ai#2966](https://github.com/symfony/ai/pull/2966): Mistral's moderation models in the Mistral bridge (open).
+- [symfony/ai#3058](https://github.com/symfony/ai/pull/3058): text to speech through any OpenAI-compatible server in the generic bridge, for the local voices below (open; `src/Speech/` is a copy until it is released).
 
 ## Install
 
@@ -67,6 +68,17 @@ TAVILY_API_KEY=
 | `TAVILY_API_KEY` | Optional: lets the hosts search the web for their sources in `/studio` | [tavily.com](https://tavily.com), the free plan is enough |
 
 No restart is needed. Then make an episode [from an MCP client](#use-it-from-an-mcp-client) or [from the browser](#or-from-the-browser).
+
+### Voices on your machine: VoiceStudio
+
+The hosts can speak through [VoiceStudio](https://github.com/debpalash/VoiceStudio), a free local voice app, instead of Voxtral. Install it (`brew install --cask debpalash/tap/voicestudio` on an Apple Silicon Mac), open it once so it installs a voice engine, then add to `.env.local`:
+
+```dotenv
+VOICE_PLATFORM=voicestudio
+VOICE_MODEL=kittentts
+```
+
+Each host then has one KittenTTS voice, whatever the emotion (`app.voicestudio_voices` in `config/services.yaml`). VoiceStudio answers on `http://127.0.0.1:3900` only, so it works with PHP on your machine, not from the Docker container; set `VOICESTUDIO_URL` (and `VOICESTUDIO_API_KEY`) for one on another machine. Check the licence of the engine you pick: some, like OmniVoice, are for non-commercial use only.
 
 ### If something goes wrong
 

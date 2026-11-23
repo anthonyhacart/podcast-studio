@@ -68,6 +68,16 @@ parameters:
                 voices:
                     neutral: voice_3147
 
+    # the hosts' voices when VOICE_PLATFORM=voicestudio: KittenTTS presets, one per host whatever the emotion
+    # (VOICE_MODEL=kittentts); with a cloning engine, a voice profile id or name of the VoiceStudio app
+    app.voicestudio_voices:
+        paul: expr-voice-2-m
+        jane: expr-voice-2-f
+        oliver: expr-voice-3-m
+        marie: expr-voice-3-f
+        howard: expr-voice-4-m
+        harriet: expr-voice-4-f
+
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -78,6 +88,8 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/'
+        # built by SpeechPlatformFactory, not services
+        exclude: '../src/Speech/'
 
     # the web search of the "researcher" agent (config/packages/ai.yaml)
     Symfony\AI\Agent\Bridge\Tavily\Tavily:
@@ -86,6 +98,16 @@ services:
             $httpClient: '@App\Replay\ReplayableHttpClient'
             $apiKey: '%env(TAVILY_API_KEY)%'
             $options: { include_images: false, max_results: 8 }
+
+    # a local VoiceStudio (VOICE_PLATFORM=voicestudio), see App\Speech\SpeechModel
+    app.platform.voicestudio:
+        class: Symfony\AI\Platform\Platform
+        factory: [App\Speech\SpeechPlatformFactory, create]
+        arguments:
+            $httpClient: '@http_client'
+            $baseUrl: '%env(VOICESTUDIO_URL)%'
+            $model: '%env(VOICE_MODEL)%'
+            $apiKey: '%env(default::VOICESTUDIO_API_KEY)%'
 
 when@test:
     parameters:
